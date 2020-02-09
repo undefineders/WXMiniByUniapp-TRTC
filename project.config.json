@@ -12,7 +12,7 @@
 	},
 	"compileType": "miniprogram",
 	"libVersion": "2.10.1",
-	"appid": "wxf2097679b8273157",
+	"appid": "",
 	"projectname": "WXMiniByUniapp-TRTC",
 	"debugOptions": {
 		"hidedInDevtools": []
