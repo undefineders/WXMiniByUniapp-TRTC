@@ -1,0 +1,37 @@
+{
+	"pages": [
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/room/room",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/meeting/meeting",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/videocall/videocall",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		}
+	],
+	"style": "v2",
+	"globalStyle": {
+		"backgroundColor": "#F6F6F6",
+		"backgroundTextStyle": "light",
+		"navigationBarBackgroundColor": "#F6F6F6",
+		"navigationBarTitleText": "腾讯云实时音视频",
+		"navigationBarTextStyle": "black"
+	},
+	"subPackages": []
+}
