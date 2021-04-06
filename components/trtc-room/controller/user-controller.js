@@ -12,7 +12,7 @@ class UserController {
     // userMap 用于存储完整的数据结构
     this.userMap = new Map(); // userList 用于存储简化的用户数据 Object，包括 {userID hasMainAudio hasMainVideo hasAuxAudio hasAuxVideo}
 
-    this.userList = []; // streamList 存储steam 对象列表，用于trtc-room 渲染 player
+    this.userList = []; // streamList 存储steam 对象列表，用于 trtc-room 渲染 player
 
     this.streamList = [];
     this._emitter = new Event();
@@ -145,7 +145,12 @@ class UserController {
     if (Array.isArray(incomingUserList) && incomingUserList.length > 0) {
       incomingUserList.forEach(item => {
         const userID = item.userid;
-        let user = this.getUser(userID); // 从userList 里删除指定的用户和 stream
+        let user = this.getUser(userID); // 偶现SDK触发退房事件前没有触发进房事件
+
+        if (!user || !user.streams) {
+          return;
+        } // 从userList 里删除指定的用户和 stream
+
 
         this._removeUserAndStream(userID); // 重置
 
@@ -172,42 +177,64 @@ class UserController {
 
 
   updateUserVideo(data) {
-    // console.log(TAG_NAME, 'updateUserVideo', data)
+    console.log(TAG_NAME, 'updateUserVideo', data);
     const incomingUserList = data.userlist;
 
     if (Array.isArray(incomingUserList) && incomingUserList.length > 0) {
       incomingUserList.forEach(item => {
-        // 修改现有用户属性
         const userID = item.userid;
         const streamType = item.streamtype;
+        const streamID = userID + '_' + streamType;
         const hasVideo = item.hasvideo;
         const src = item.playurl;
-        const user = this.getUser(userID); // 如果找到该用户，则更新用户的信息和相关的stream 信息
+        const user = this.getUser(userID); // 更新指定用户的属性
 
         if (user) {
-          let stream = user.streams[streamType]; // console.log(TAG_NAME, 'updateUserVideo', user, streamType, stream)
-          // 更新指定的stream
+          // 查找对应的 stream
+          let stream = user.streams[streamType];
+          console.log(TAG_NAME, 'updateUserVideo start', user, streamType, stream); // 常规逻辑
+          // 新来的stream，新增到 user.steams 和 streamList，streamList 包含所有用户(有音频或视频)的 stream
 
           if (!stream) {
+            // 不在 user streams 里，需要新建
             user.streams[streamType] = stream = new Stream({
-              streamType: streamType
-            }); // 更新streamList
+              userID,
+              streamID,
+              hasVideo,
+              src,
+              streamType
+            });
 
-            this.streamList.push(stream);
-          }
-
-          if (hasVideo && streamType === 'aux') {
-            stream.objectFit = 'contain';
-          }
-
-          if (!hasVideo && streamType === 'aux') {
-            // TODO 如果是辅流可能要移除该 stream
-            this._removeStream(stream);
+            this._addStream(stream);
           } else {
-            stream.userID = userID;
-            stream.streamID = userID + '_' + streamType;
-            stream.hasVideo = hasVideo;
-            stream.src = src;
+            // 更新 stream 属性
+            stream.setProperty({
+              hasVideo
+            });
+
+            if (!hasVideo && !stream.hasAudio) {
+              this._removeStream(stream);
+            } // or
+            // if (hasVideo) {
+            //   stream.setProperty({ hasVideo })
+            // } else if (!stream.hasAudio) {
+            //   // hasVideo == false && hasAudio == false
+            //   this._removeStream(stream)
+            // }
+
+          } // 特殊逻辑
+
+
+          if (streamType === 'aux') {
+            if (hasVideo) {
+              // 辅流需要修改填充模式
+              stream.objectFit = 'contain';
+
+              this._addStream(stream);
+            } else {
+              // 如果是辅流要移除该 stream，否则需要移除 player
+              this._removeStream(stream);
+            }
           } // 更新所属user 的 hasXxx 值
 
 
@@ -217,6 +244,7 @@ class UserController {
               return true;
             }
           });
+          console.log(TAG_NAME, 'updateUserVideo end', user, streamType, stream);
           const eventName = hasVideo ? EVENT.REMOTE_VIDEO_ADD : EVENT.REMOTE_VIDEO_REMOVE;
 
           this._emitter.emit(eventName, {
@@ -244,25 +272,52 @@ class UserController {
         const userID = item.userid; // 音频只跟着 stream main ，这里只修改 main
 
         const streamType = 'main';
+        const streamID = userID + '_' + streamType;
         const hasAudio = item.hasaudio;
         const src = item.playurl;
         const user = this.getUser(userID);
 
         if (user) {
-          let stream = user.streams[streamType];
+          let stream = user.streams[streamType]; // if (!stream) {
+          //   user.streams[streamType] = stream = new Stream({ streamType: streamType })
+          //   this._addStream(stream)
+          // }
+          // 常规逻辑
+          // 新来的stream，新增到 user.steams 和 streamList，streamList 包含所有用户的 stream
 
           if (!stream) {
+            // 不在 user streams 里，需要新建
             user.streams[streamType] = stream = new Stream({
-              streamType: streamType
-            }); // 更新streamList
+              userID,
+              streamID,
+              hasAudio,
+              src,
+              streamType
+            });
 
-            this.streamList.push(stream);
-          }
+            this._addStream(stream);
+          } else {
+            // 更新 stream 属性
+            stream.setProperty({
+              hasAudio
+            });
 
-          stream.userID = userID;
-          stream.streamID = userID + '_' + streamType;
-          stream.hasAudio = hasAudio;
-          stream.src = src; // 更新所属 user 的 hasXxx 值
+            if (!hasAudio && !stream.hasVideo) {
+              this._removeStream(stream);
+            } // or
+            // if (hasAudio) {
+            //   stream.setProperty({ hasAudio })
+            // } else if (!stream.hasVideo) {
+            // // hasVideo == false && hasAudio == false
+            //   this._removeStream(stream)
+            // }
+
+          } // stream.userID = userID
+          // stream.streamID = userID + '_' + streamType
+          // stream.hasAudio = hasAudio
+          // stream.src = src
+          // 更新所属 user 的 hasXxx 值
+
 
           this.userList.find(item => {
             if (item.userID === userID) {
@@ -354,6 +409,12 @@ class UserController {
     });
   }
 
+  _addStream(stream) {
+    if (!this.streamList.includes(stream)) {
+      this.streamList.push(stream);
+    }
+  }
+
   _removeStream(stream) {
     this.streamList = this.streamList.filter(item => {
       if (item.userID === stream.userID && item.streamType === stream.streamType) {
@@ -362,6 +423,8 @@ class UserController {
 
       return true;
     });
+    const user = this.getUser(stream.userID);
+    user.streams[stream.streamType] = undefined;
   }
 
 }

@@ -35,7 +35,27 @@ export const EVENT = {
   // bgm 播放时间戳变更
   BGM_PLAY_COMPLETE: 'BGM_PLAY_COMPLETE',
   // bgm 播放结束 或者 调用 LivePusherContext.stopBGM() ?
-  ERROR: 'ERROR' // pusher 出现错误
+  ERROR: 'ERROR',
+  // pusher 出现错误
+  IM_READY: 'IM_READY',
+  // IM SDK 可用
+  IM_MESSAGE_RECEIVED: 'IM_MESSAGE_RECEIVED',
+  // 收到IM 消息
+  IM_NOT_READY: 'IM_NOT_READY',
+  // IM SDK 不可用
+  IM_KICKED_OUT: 'IM_KICKED_OUT',
+  // IM SDK 下线
+  IM_ERROR: 'IM_ERROR' // IM SDK 下线
+
+};
+export const DEFAULT_COMPONENT_CONFIG = {
+  sdkAppID: '',
+  userID: '',
+  userSig: '',
+  template: '',
+  debugMode: false,
+  // 是否开启调试模式
+  enableIM: false // 是否开启 IM
 
 };
 export const DEFAULT_PUSHER_CONFIG = {
@@ -58,9 +78,9 @@ export const DEFAULT_PUSHER_CONFIG = {
   // 是否自动对焦
   enableZoom: false,
   // 是否支持调整焦距
-  minBitrate: 200,
+  minBitrate: 600,
   // 最小码率
-  maxBitrate: 1000,
+  maxBitrate: 900,
   // 最大码率
   videoWidth: 360,
   // 视频宽（若设置了视频宽高就会忽略aspect）
@@ -88,9 +108,14 @@ export const DEFAULT_PUSHER_CONFIG = {
   // 声音类型 可选值： media: 媒体音量，voicecall: 通话音量
   audioReverbType: 0,
   // 音频混响类型 0: 关闭 1: KTV 2: 小房间 3:大会堂 4:低沉 5:洪亮 6:金属声 7:磁性
-  waitingImage: '',
+  // waitingImage: 'https://web-player-1252463788.cos.ap-shanghai.myqcloud.com/demo/1px.png', // 当微信切到后台时的垫片图片 trtc暂不支持
+  waitingImage: 'https://mc.qcloudimg.com/static/img/daeed8616ac5df256c0591c22a65c4d3/pause_publish.jpg',
   // 当微信切到后台时的垫片图片 trtc暂不支持
-  waitingImageHash: ''
+  waitingImageHash: '',
+  beautyStyle: 'smooth',
+  // 美颜类型，取值有：smooth: 光滑 、nature: 自然
+  filter: '' // standard: 标准 pink: 粉嫩 nostalgia: 怀旧 blues: 蓝调 romantic: 浪漫  cool: 清凉 fresher: 清新 solor: 日系 aestheticism: 唯美 whitening:美白 cerisered: 樱红
+
 };
 export const DEFAULT_PLAYER_CONFIG = {
   src: '',
@@ -98,9 +123,9 @@ export const DEFAULT_PLAYER_CONFIG = {
   autoplay: true,
   // 7.0.9 必须设置为true，否则 Android 有概率调用play()失败
   muteAudio: true,
-  // 默认不拉取音频，需要手动订阅
+  // 默认不拉取音频，需要手动订阅，如果要快速播放，需要设置false
   muteVideo: true,
-  // 默认不拉取视频，需要手动订阅
+  // 默认不拉取视频，需要手动订阅，如果要快速播放，需要设置false
   orientation: 'vertical',
   // 画面方向 vertical horizontal
   objectFit: 'fillCrop',

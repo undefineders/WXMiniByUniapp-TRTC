@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { genTestUserSig,setData } from "../../debug/GenerateTestUserSig";
+import { genTestUserSig } from "../../debug/GenerateTestUserSig";
 import trtcRoom from "../../components/trtc-room/trtc-room";
 
 export default {
@@ -27,7 +27,8 @@ export default {
         template: '' // 必要参数 组件模版，支持的值 1v1 grid custom ，注意：不支持动态修改, iOS 不支持 pusher 动态渲染
 
       },
-      showTipToast: false
+      showTipToast: false,
+      subscribeList: {}
     };
   },
 
@@ -42,12 +43,11 @@ export default {
    */
   onLoad: function (options) {
     console.log('room onload', options);
-    wx.setKeepScreenOn({
+    uni.setKeepScreenOn({
       keepScreenOn: true
     }); // 获取 rtcroom 实例
 
     this.trtcComponent = this.$refs['trtc-component']; // 监听TRTC Room 关键事件
-	console.log('this.trtcComponent',this.trtcComponent.enterRoom)
 
     this.bindTRTCRoomEvent(); // 将String 类型的 true false 转换成 boolean
 
@@ -67,7 +67,6 @@ export default {
       userID: options.userID,
       template: options.template,
       debugMode: options.debugMode,
-      cloudenv: options.cloudenv,
       frontCamera: options.frontCamera,
       localVideo: options.localVideo,
       localAudio: options.localAudio,
@@ -76,12 +75,24 @@ export default {
       localMirror: options.localMirror,
       enableAgc: options.enableAgc,
       enableAns: options.enableAns,
-      encsmall: options.encsmall,
       videoHeight: options.videoHeight,
       videoWidth: options.videoWidth,
-      scene: options.scene,
       maxBitrate: Number(options.maxBitrate),
-      minBitrate: Number(options.minBitrate)
+      minBitrate: Number(options.minBitrate),
+      audioVolumeType: options.audioVolumeType,
+      audioQuality: options.audioQuality,
+      // pusher URL 参数
+      scene: options.scene,
+      encsmall: options.encsmall,
+      cloudenv: options.cloudenv,
+      enableBlackStream: options.enableBlackStream,
+      streamID: options.streamID,
+      userDefineRecordID: options.userDefineRecordID,
+      privateMapKey: options.privateMapKey,
+      pureAudioMode: options.pureAudioMode,
+      recvMode: options.recvMode,
+      // player 参数
+      enableRecvMessage: options.enableRecvMessage
     });
   },
 
@@ -90,6 +101,9 @@ export default {
    */
   onReady: function () {
     console.log('room ready');
+    uni.setKeepScreenOn({
+      keepScreenOn: true
+    });
   },
 
   /**
@@ -97,13 +111,18 @@ export default {
    */
   onShow: function () {
     console.log('room show');
+    uni.setKeepScreenOn({
+      keepScreenOn: true
+    });
   },
 
   /**
    * 生命周期函数--监听页面隐藏
    */
   onHide: function () {
-    console.log('room hide');
+    console.log('room hide'); // onHide 后由微信接管，限制了不能退房，只能取消订阅
+    // 退后台后取消发布音频
+    // this.trtcComponent.unpublishLocalAudio()
   },
 
   /**
@@ -111,6 +130,9 @@ export default {
    */
   onUnload: function () {
     console.log('room unload');
+    uni.setKeepScreenOn({
+      keepScreenOn: false
+    });
   },
 
   /**
@@ -128,11 +150,10 @@ export default {
    */
   onShareAppMessage: function () {},
   methods: {
-	  setData,
     enterRoom: function (params) {
       params.template = params.template || '1v1';
-      params.roomID = params.roomID || 2333;
-      params.userID = params.userID || new Date().getTime().toString(16);
+      params.roomID = params.roomID || this.randomRoomID();
+      params.userID = params.userID || this.randomUserID();
       console.log('* room enterRoom', params);
       const Signature = genTestUserSig(params.userID);
       params.sdkAppID = Signature.sdkAppID;
@@ -149,21 +170,33 @@ export default {
           // 1v1 grid custom
           debugMode: params.debugMode,
           // 非必要参数，打开组件的调试模式，开发调试时建议设置为 true
-          // cloudenv: params.cloudenv, // 非必要参数
           frontCamera: params.frontCamera,
           enableEarMonitor: params.enableEarMonitor,
           enableAutoFocus: params.enableAutoFocus,
           localMirror: params.localMirror,
           enableAgc: params.enableAgc,
           enableAns: params.enableAns,
-          encsmall: params.encsmall ? 1 : 0,
           videoWidth: params.videoWidth,
           videoHeight: params.videoHeight,
-          scene: params.scene,
           maxBitrate: params.maxBitrate,
           minBitrate: params.minBitrate,
-          beautyLevel: 9 // 默认开启美颜
-
+          beautyLevel: 9,
+          // 开启美颜等级 0～9级美颜
+          enableIM: false,
+          // 可选，仅支持初始化设置（进房前设置），不支持动态修改
+          audioVolumeType: params.audioVolumeType,
+          audioQuality: params.audioQuality,
+          // pusher URL 参数
+          scene: params.scene,
+          // rtc live
+          encsmall: params.encsmall ? 1 : 0,
+          cloudenv: params.cloudenv,
+          enableBlackStream: params.enableBlackStream,
+          streamID: params.streamID,
+          userDefineRecordID: params.userDefineRecordID,
+          privateMapKey: params.privateMapKey,
+          pureAudioMode: params.pureAudioMode,
+          recvMode: params.recvMode
         };
       } else {
         this.rtcConfig = {
@@ -175,23 +208,17 @@ export default {
           // 1v1 grid custom
           debugMode: params.debugMode,
           // 非必要参数，打开组件的调试模式，开发调试时建议设置为 true
-          beautyLevel: 9 // 默认开启美颜
-          // cloudenv: params.cloudenv, // 非必要参数
-
+          beautyLevel: 9,
+          // 默认开启美颜
+          enableIM: false,
+          // 可选，仅支持初始化设置（进房前设置），不支持动态修改
+          audioVolumeType: params.audioVolumeType
         };
       }
 
       this.setData({
         rtcConfig: this.rtcConfig
       }, () => {
-        // 进房前决定是否推送视频或音频 部分机型会出现画面卡死，暂不支持进房前设置，必须放到进房成功事件后设置
-        // console.log('rtcConfig', this.data.rtcConfig)
-        // if (params.localVideo === true || params.template === '1v1') {
-        //   this.trtcComponent.publishLocalVideo()
-        // }
-        // if (params.localAudio === true || params.template === '1v1') {
-        //   this.trtcComponent.publishLocalAudio()
-        // }
         // roomID 取值范围 1 ~ 4294967295
         this.trtcComponent.enterRoom({
           roomID: params.roomID
@@ -225,6 +252,16 @@ export default {
         if (this.options.localAudio === true || this.options.template === '1v1') {
           this.trtcComponent.publishLocalAudio();
         }
+
+        if (this.options.template === 'custom') {
+          this.trtcComponent.setViewRect({
+            userID: event.userID,
+            xAxis: '0rpx',
+            yAxis: '0rpx',
+            width: '240rpx',
+            height: '320rpx'
+          });
+        }
       });
       this.trtcComponent.on(TRTC_EVENT.LOCAL_LEAVE, event => {
         console.log('* room LOCAL_LEAVE', event);
@@ -234,7 +271,7 @@ export default {
       }); // 远端用户进房
 
       this.trtcComponent.on(TRTC_EVENT.REMOTE_USER_JOIN, event => {
-        console.log('* room REMOTE_USER_JOIN ---  room.vue', event, this.trtcComponent.getRemoteUserList(),this.template);
+        console.log('* room REMOTE_USER_JOIN', event, this.trtcComponent.getRemoteUserList());
         this.timestamp.push(new Date()); // 1v1视频通话时限制人数为两人的简易逻辑，建议通过后端实现房间人数管理
         // 2人以上同时进行通话请选择网格布局
 
@@ -250,7 +287,7 @@ export default {
                 this.setData({
                   showTipToast: false
                 });
-                wx.navigateBack({
+                uni.navigateBack({
                   delta: 1
                 });
               }, 4000);
@@ -284,11 +321,14 @@ export default {
             userID: data.userID,
             streamType: data.streamType
           });
-        } else if (this.template === 'grid') {
+        } else {
+          // if (!this.data.subscribeList[data.userID + '-video']) {
           this.trtcComponent.subscribeRemoteVideo({
             userID: data.userID,
             streamType: data.streamType
-          });
+          }); // 标记该用户已首次订阅过
+
+          this.subscribeList[data.userID + '-video'] = true; // }
         }
 
         if (this.template === 'custom' && data.userID && data.streamType) {
@@ -323,22 +363,65 @@ export default {
           this.trtcComponent.subscribeRemoteAudio({
             userID: data.userID
           });
-        } else if (this.template === 'grid' || this.template === 'custom') {
+        } else {
+          // if (!this.data.subscribeList[data.userID + '-audio']) {
           this.trtcComponent.subscribeRemoteAudio({
             userID: data.userID
-          });
-        } // 如果不订阅就不会自动播放音频
-        // this.trtcComponent.subscribeRemoteAudio({ userID: data.userID })
+          }); // 标记该用户已首次订阅过
 
+          this.subscribeList[data.userID + '-audio'] = true; // }
+        }
       }); // 远端用户取消推送音频
 
       this.trtcComponent.on(TRTC_EVENT.REMOTE_AUDIO_REMOVE, event => {
         console.log('* room REMOTE_AUDIO_REMOVE', event, this.trtcComponent.getRemoteUserList());
+      }); // this.trtcComponent.on(TRTC_EVENT.LOCAL_NET_STATE_UPDATE, (event)=>{
+      //   console.log('* room LOCAL_NET_STATE_UPDATE', event)
+      // })
+      // this.trtcComponent.on(TRTC_EVENT.REMOTE_NET_STATE_UPDATE, (event)=>{
+      //   console.log('* room REMOTE_NET_STATE_UPDATE', event)
+      // })
+
+      this.trtcComponent.on(TRTC_EVENT.IM_READY, event => {
+        console.log('* room IM_READY', event);
       });
+      this.trtcComponent.on(TRTC_EVENT.IM_MESSAGE_RECEIVED, event => {
+        console.log('* room IM_MESSAGE_RECEIVED', event);
+      });
+    },
+    randomUserID: function () {
+      return new Date().getTime().toString(16).split('').reverse().join('');
+    },
+    randomRoomID: function () {
+      return parseInt(Math.random() * 9999);
     }
   }
 };
 </script>
 <style>
-@import "./room.css";
+/* miniprogram/pages/room/room.wxss */
+.page-room{
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+.tip-toast {
+  position: absolute;
+  top: 40vh;
+  width: 70vw;
+  left: 15vw;
+  border-radius: 12rpx;
+  height: 20vh;
+  background: rgba(0,0,0,0.8);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+}
+.tip-toast view {
+  padding: 20rpx 0;
+  font-size: 32rpx;
+}
 </style>

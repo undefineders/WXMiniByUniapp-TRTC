@@ -3,35 +3,55 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationStyle": "custom"
+				"navigationStyle": "custom",
+				"disableScroll": true
 			}
 		},
 		{
 			"path": "pages/room/room",
 			"style": {
-				"navigationStyle": "custom"
+				"navigationStyle": "custom",
+				"disableScroll": true
 			}
 		},
 		{
 			"path": "pages/meeting/meeting",
 			"style": {
-				"navigationStyle": "custom"
+				"navigationStyle": "custom",
+				"disableScroll": true
 			}
 		},
 		{
 			"path": "pages/videocall/videocall",
 			"style": {
-				"navigationStyle": "custom"
+				"navigationStyle": "custom",
+				"disableScroll": true
+			}
+		},
+		{
+			"path": "pages/voice-room/join-room/joinRoom",
+			"style": {
+				"navigationStyle": "custom",
+				"disableScroll": true
+			}
+		},
+		{
+			"path": "pages/voice-room/room/room",
+			"style": {
+				"navigationStyle": "custom",
+				"disableScroll": true
 			}
 		}
 	],
+	"sitemapLocation": "sitemap.json",
 	"style": "v2",
 	"globalStyle": {
 		"backgroundColor": "#F6F6F6",
 		"backgroundTextStyle": "light",
 		"navigationBarBackgroundColor": "#F6F6F6",
 		"navigationBarTitleText": "腾讯云实时音视频",
-		"navigationBarTextStyle": "black"
+		"navigationBarTextStyle": "white",
+		"navigationStyle": "custom"
 	},
 	"subPackages": []
 }

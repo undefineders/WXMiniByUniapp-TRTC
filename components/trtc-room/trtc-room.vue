@@ -1,215 +1,269 @@
 <template>
 	<view>
-		<view class="trtc-room-container">
-			<view v-if="template === '1v1'">
-				<view data-type="template" data-is="1v1" data-attr="pusher, streamList, debug">
+		<!--<import src="./template/1v1/1v1.wxml"></import>-->
+		<!--<import src="./template/grid/grid.wxml"></import>-->
+		<!--<import src="./template/custom/custom.wxml"></import>-->
+
+		<view :class="'trtc-room-container ' + (isFullscreenDevice?'fullscreen-device-fix':'')">
+			<block v-if="template === '1v1'">
+				<block data-type="template" data-is="1v1" data-attr="pusher, streamList, debug, enableIM">
 					<view class="template-1v1">
-						<view
-							v-for="(item, streamID) in streamList"
-							:key="streamID"
+						<view v-for="(item, index) in streamList" :key="index"
 							v-if="item.src && (item.hasVideo || item.hasAudio)"
-							:class="'view-container player-container ' + (item.isVisible ? '' : 'none')"
-						>
-							<live-player
-								class="player"
-								:data-userid="item.userID"
-								:data-streamid="item.streamID"
-								:data-streamtype="item.streamType"
-								:src="item.src"
-								mode="RTC"
-								:autoplay="item.autoplay"
-								:mute-audio="item.muteAudio"
-								:mute-video="item.muteVideo"
-								:orientation="item.orientation"
-								:object-fit="item.objectFit"
-								:background-mute="item.enableBackgroundMute"
-								:min-cache="item.minCache"
-								:max-cache="item.maxCache"
-								:sound-mode="item.soundMode"
+							:class="'view-container player-container ' + (item.isVisible?'':'none')">
+							<live-player class="player" :id="item.streamID" :data-userid="item.userID"
+								:data-streamid="item.streamID" :data-streamtype="item.streamType" :src="item.src"
+								mode="RTC" :autoplay="item.autoplay" :mute-audio="item.muteAudio"
+								:mute-video="item.muteVideo" :orientation="item.orientation"
+								:object-fit="item.objectFit" :background-mute="item.enableBackgroundMute"
+								:min-cache="item.minCache" :max-cache="item.maxCache" :sound-mode="item.soundMode"
 								:enable-recv-message="item.enableRecvMessage"
 								:auto-pause-if-navigate="item.autoPauseIfNavigate"
-								:auto-pause-if-open-native="item.autoPauseIfOpenNative"
-								:debug="debug"
-								@statechange="playerStateChangeFun"
-								@fullscreenchange="playerFullscreenChangeFun"
-								@netstatus="playerNetStatusFun"
-								@audiovolumenotify="playerAudioVolumeNotifyFun"
-								:idAttr="item.streamID"
-							></live-player>
+								:auto-pause-if-open-native="item.autoPauseIfOpenNative" :debug="debug"
+								@statechange="playerStateChangeFun" @fullscreenchange="playerFullscreenChangeFun"
+								@netstatus="playerNetStatusFun" @audiovolumenotify="playerAudioVolumeNotifyFun">
+							</live-player>
 						</view>
-						<view :class="'view-container pusher-container ' + (pusher.isVisible ? '' : 'none') + ' ' + (JSON.stringify(streamList) == '[]' ? 'fullscreen' : '')">
-							<live-pusher
-								class="pusher"
-								:url="pusher.url"
-								:mode="pusher.mode"
-								:autopush="pusher.autopush"
-								:enable-camera="pusher.enableCamera"
-								:enable-mic="pusher.enableMic"
-								:enable-agc="pusher.enableAgc"
-								:enable-ans="pusher.enableAns"
-								:enable-ear-monitor="pusher.enableEarMonitor"
-								:auto-focus="pusher.enableAutoFocus"
-								:zoom="pusher.enableZoom"
-								:min-bitrate="pusher.minBitrate"
-								:max-bitrate="pusher.maxBitrate"
-								:video-width="pusher.videoWidth"
-								:video-height="pusher.videoHeight"
-								:beauty="pusher.beautyLevel"
-								:whiteness="pusher.whitenessLevel"
-								:orientation="pusher.videoOrientation"
-								:aspect="pusher.videoAspect"
-								:device-position="pusher.frontCamera"
-								:remote-mirror="pusher.enableRemoteMirror"
-								:local-mirror="pusher.localMirror"
-								:background-mute="pusher.enableBackgroundMute"
-								:audio-quality="pusher.audioQuality"
-								:audio-volume-type="pusher.audioVolumeType"
-								:audio-reverb-type="pusher.audioReverbType"
-								:waiting-image="pusher.waitingImage"
-								:debug="debug"
-								@statechange="pusherStateChangeHandlerFun"
-								@netstatus="pusherNetStatusHandlerFun"
-								@error="pusherErrorHandlerFun"
-								@bgmstart="pusherBGMStartHandlerFun"
-								@bgmprogress="pusherBGMProgressHandlerFun"
-								@bgmcomplete="pusherBGMCompleteHandlerFun"
-							></live-pusher>
+						<view
+							:class="'view-container pusher-container ' + (pusher.isVisible?'':'none') + ' ' + (streamList.length===0? 'fullscreen':'')">
+							<live-pusher class="pusher" :url="pusher.url" :mode="pusher.mode"
+								:autopush="pusher.autopush" :enable-camera="pusher.enableCamera"
+								:enable-mic="pusher.enableMic" :muted="!pusher.enableMic" :enable-agc="pusher.enableAgc"
+								:enable-ans="pusher.enableAns" :enable-ear-monitor="pusher.enableEarMonitor"
+								:auto-focus="pusher.enableAutoFocus" :zoom="pusher.enableZoom"
+								:min-bitrate="pusher.minBitrate" :max-bitrate="pusher.maxBitrate"
+								:video-width="pusher.videoWidth" :video-height="pusher.videoHeight"
+								:beauty="pusher.beautyLevel" :whiteness="pusher.whitenessLevel"
+								:orientation="pusher.videoOrientation" :aspect="pusher.videoAspect"
+								:device-position="pusher.frontCamera" :remote-mirror="pusher.enableRemoteMirror"
+								:local-mirror="pusher.localMirror" :background-mute="pusher.enableBackgroundMute"
+								:audio-quality="pusher.audioQuality" :audio-volume-type="pusher.audioVolumeType"
+								:audio-reverb-type="pusher.audioReverbType" :waiting-image="pusher.waitingImage"
+								:debug="debug" @statechange="pusherStateChangeHandlerFun"
+								@netstatus="pusherNetStatusHandlerFun" @error="pusherErrorHandlerFun"
+								@bgmstart="pusherBGMStartHandlerFun" @bgmprogress="pusherBGMProgressHandlerFun"
+								@bgmcomplete="pusherBGMCompleteHandlerFun" @audiovolumenotify="pusherAudioVolumeNotifyFun">
+							</live-pusher>
 							<view class="loading" v-if="streamList.length === 0">
-								<view class="loading-img"><image src="../../static/components/trtc-room/static/loading.png" class="rotate-img"></image></view>
+								<view class="loading-img">
+									<image src="../../static/components/trtc-room/static/loading.png"
+										class="rotate-img"></image>
+								</view>
 								<view class="loading-text">等待接听中...</view>
 							</view>
 						</view>
 						<view class="handle-btns">
 							<view class="btn-normal" @tap="toggleAudioFun">
-								<image
-									:src="pusher.enableMic ? '../../static/components/trtc-room/static/audio-true.png' : '../../static/components/trtc-room/static/audio-false.png'"
-								></image>
+								<image class="btn-image"
+									:src="(pusher.enableMic? '../../static/components/trtc-room/static/audio-true.png': '../../static/components/trtc-room/static/audio-false.png') + ' '">
+								</image>
 							</view>
-							<view class="btn-normal" @tap="switchCamera"><image src="../../static/components/trtc-room/static/switch.png"></image></view>
+							<view class="btn-normal" @tap="switchCamera">
+								<image class="btn-image" src="../../static/components/trtc-room/static/switch.png">
+								</image>
+							</view>
 							<!-- <view class="btn-normal" bindtap="toggleVideoFun">
-        <image src="{{pusher.enableCamera? '../../static/components/trtc-room/static/camera-true.png': '../../static/components/trtc-room/static/camera-false.png'}} "></image>
+        <image class="btn-image" src="{{pusher.enableCamera? '../../static/components/trtc-room/static/camera-true.png': '../../static/components/trtc-room/static/camera-false.png'}} "></image>
       </view> -->
 							<view class="btn-normal" @tap="toggleSoundModeFun">
-								<image
-									:src="
-										streamList[0].soundMode === 'ear'
-											? '../../static/components/trtc-room/static/phone.png'
-											: '../../static/components/trtc-room/static/speaker-true.png'
-									"
-								></image>
+								<image class="btn-image"
+									:src="(streamList[0].soundMode === 'ear' ? '../../static/components/trtc-room/static/phone.png': '../../static/components/trtc-room/static/speaker-true.png') + ' '">
+								</image>
 							</view>
 						</view>
 						<view class="bottom-btns">
-							<view class="btn-hangup" @tap="hangUpFun"><image src="../../static/components/trtc-room/static/hangup.png"></image></view>
+							<view class="btn-normal" data-key="beautyLevel" data-value="9|0" data-value-type="number"
+								@tap="setPuserPropertyFun">
+								<image class="btn-image"
+									:src="(pusher.beautyLevel == 9 ? '../../static/components/trtc-room/static/beauty-true.png': '../../static/components/trtc-room/static/beauty-false.png') + ' '">
+								</image>
+							</view>
+							<view class="btn-hangup" @tap="hangUpFun">
+								<image class="btn-image" src="../../static/components/trtc-room/static/hangup.png">
+								</image>
+							</view>
+							<view class="btn-normal" @tap="toggleIMPanelFun">
+								<image class="btn-image"
+									:src="enableIM? '../../static/components/trtc-room/static/im.png': '../../static/components/trtc-room/static/im-disable.png'">
+								</image>
+							</view>
 						</view>
 					</view>
-				</view>
-			</view>
-			<view v-if="template === 'grid'">
-				<view data-type="template" data-is="grid" data-attr="pusher, streamList, debug, panelName">
-					<view :class="'template-grid ' + (streamList.length < 6 ? 'stream-' + streamList.length : 'stream-5')">
-						<view
-							v-for="(item, streamID) in streamList"
-							:key="streamID"
-							v-if="item.src && (item.hasVideo || item.hasAudio)"
-							:class="'view-container player-container ' + (item.isVisible ? '' : 'none')"
-							:data-userid="item.userID"
-							:data-streamtype="item.streamType"
-							@tap="doubleTabToggleFullscreenFun"
-						>
-							<live-player
-								class="player"
-								:data-userid="item.userID"
-								:data-streamid="item.streamID"
-								:data-streamtype="item.streamType"
-								:src="item.src"
-								mode="RTC"
-								:autoplay="item.autoplay"
-								:mute-audio="item.muteAudio"
-								:mute-video="item.muteVideo"
-								:orientation="item.orientation"
-								:object-fit="item.objectFit"
-								:background-mute="item.enableBackgroundMute"
-								:min-cache="item.minCache"
-								:max-cache="item.maxCache"
-								:sound-mode="item.soundMode"
-								:enable-recv-message="item.enableRecvMessage"
-								:auto-pause-if-navigate="item.autoPauseIfNavigate"
-								:auto-pause-if-open-native="item.autoPauseIfOpenNative"
-								:debug="debug"
-								@statechange="playerStateChangeFun"
-								@fullscreenchange="playerFullscreenChangeFun"
-								@netstatus="playerNetStatusFun"
-								@audiovolumenotify="playerAudioVolumeNotifyFun"
-								:idAttr="item.streamID"
-							></live-player>
-							<view class="operation-bar">
-								<view class="btn-normal" @tap="handleSubscribeRemoteAudioFun" :data-user-i-d="item.userID" :data-stream-type="item.streamType">
-									<image
-										:src="
-											item.muteAudio
-												? '../../static/components/trtc-room/static/speaker-false.png'
-												: '../../static/components/trtc-room/static/speaker-true.png'
-										"
-									></image>
-								</view>
-								<view class="btn-normal" @tap="handleSubscribeRemoteVideoFun" :data-user-i-d="item.userID" :data-stream-type="item.streamType">
-									<image
-										:src="
-											item.muteVideo
-												? '../../static/components/trtc-room/static/camera-false.png'
-												: '../../static/components/trtc-room/static/camera-true.png'
-										"
-									></image>
-								</view>
-								<view class="btn-normal" @tap="toggleFullscreenFun" :data-user-i-d="item.userID" :data-stream-type="item.streamType">
-									<image src="../../static/components/trtc-room/static/fullscreen.png"></image>
+				</block>
+			</block>
+			<block v-if="template === 'grid'">
+				<block data-type="template" data-is="grid"
+					data-attr="pusher, streamList, visibleStreamList, debug, enableIM, panelName, gridPagePlaceholderStreamList, gridPageCount, gridCurrentPage, gridPlayerPerPage, isShowMoreMenu, MICVolume, BGMVolume, BGMProgress, beautyStyle, beautyStyleArray, filterIndex, filterArray, audioReverbTypeArray">
+					<view class="template-grid">
+						<view class="column-layout">
+							<view class="column-1">
+								<view class="grid-scroll-container" @touchstart="handleGridTouchStartFun"
+									@touchend="handleGridTouchEndFun">
+									<!-- <view id="grid-container-id" class="grid-container {{visibleStreamList.length < 4 ? 'stream-' + visibleStreamList.length : visibleStreamList.length%2 == 0? 'stream-odd':'stream-even'}}"> -->
+									<view id="grid-container-id"
+										:class="'grid-container ' + (visibleStreamList.length < 4 ? 'stream-' + visibleStreamList.length : 'stream-3')">
+
+										<view
+											:class="'view-container pusher-container ' + (pusher.isVisible && ((gridCurrentPage === 1 && gridPlayerPerPage > 3) || gridPlayerPerPage < 4)?'':'none')">
+											<live-pusher class="pusher" :url="pusher.url" :mode="pusher.mode"
+												:autopush="pusher.autopush" :enable-camera="pusher.enableCamera"
+												:enable-mic="pusher.enableMic" :muted="!pusher.enableMic"
+												:enable-agc="pusher.enableAgc" :enable-ans="pusher.enableAns"
+												:enable-ear-monitor="pusher.enableEarMonitor"
+												:auto-focus="pusher.enableAutoFocus" :zoom="pusher.enableZoom"
+												:min-bitrate="pusher.minBitrate" :max-bitrate="pusher.maxBitrate"
+												:video-width="pusher.videoWidth" :video-height="pusher.videoHeight"
+												:beauty="pusher.beautyLevel" :whiteness="pusher.whitenessLevel"
+												:orientation="pusher.videoOrientation" :aspect="pusher.videoAspect"
+												:device-position="pusher.frontCamera"
+												:remote-mirror="pusher.enableRemoteMirror"
+												:local-mirror="pusher.localMirror"
+												:background-mute="pusher.enableBackgroundMute"
+												:audio-quality="pusher.audioQuality"
+												:audio-volume-type="pusher.audioVolumeType"
+												:audio-reverb-type="pusher.audioReverbType"
+												:waiting-image="pusher.waitingImage" :debug="debug"
+												:beauty-style="pusher.beautyStyle" :filter="pusher.filter"
+												@statechange="pusherStateChangeHandlerFun"
+												@netstatus="pusherNetStatusHandlerFun" @error="pusherErrorHandlerFun"
+												@bgmstart="pusherBGMStartHandlerFun"
+												@bgmprogress="pusherBGMProgressHandlerFun"
+												@bgmcomplete="pusherBGMCompleteHandlerFun"
+												@audiovolumenotify="pusherAudioVolumeNotifyFun"></live-pusher>
+											<view class="no-video" v-if="!pusher.enableCamera">
+												<image class="image"
+													src="../../static/components/trtc-room/static/static/mute-camera-white.png">
+												</image>
+											</view>
+											<!-- <view class="no-audio" wx:if="{{!pusher.enableMic}}">
+                <image class="image" src="../../static/components/trtc-room/static/mute-mic-white.png"></image>
+              </view>
+              <view class="audio-volume" wx:if="{{pusher.enableMic}}">
+                <image class="image" src="../../static/components/trtc-room/static/micro-open.png"></image>
+                <view class="audio-active" style="height:{{pusher.volume}}%">
+                  <image class="image" src="../../static/components/trtc-room/static/audio-active.png"></image>
+                </view>
+              </view> -->
+										</view>
+
+										<view v-for="(item, index) in visibleStreamList" :key="index"
+											:class="'view-container player-container ' + (item.isVisible?'':'none')"
+											:id="'player-'+item.streamID" :data-userid="item.userID"
+											:data-streamtype="item.streamType" @tap="doubleTabToggleFullscreenFun">
+											<live-player class="player" :id="item.streamID" :data-userid="item.userID"
+												:data-streamid="item.streamID" :data-streamtype="item.streamType"
+												:src="item.src" mode="RTC" :autoplay="item.autoplay"
+												:mute-audio="item.muteAudio" :mute-video="item.muteVideo"
+												:orientation="item.orientation" :object-fit="item.objectFit"
+												:background-mute="item.enableBackgroundMute" :min-cache="item.minCache"
+												:max-cache="item.maxCache" :sound-mode="item.soundMode"
+												:enable-recv-message="item.enableRecvMessage"
+												:auto-pause-if-navigate="item.autoPauseIfNavigate"
+												:auto-pause-if-open-native="item.autoPauseIfOpenNative" :debug="debug"
+												@statechange="playerStateChangeFun"
+												@fullscreenchange="playerFullscreenChangeFun"
+												@netstatus="playerNetStatusFun"
+												@audiovolumenotify="playerAudioVolumeNotifyFun"></live-player>
+											<view class="no-video" v-if="item.muteVideo">
+												<image class="image"
+													src="../../static/components/trtc-room/static/static/display-pause-white.png">
+												</image>
+												<view class="text">
+													<p>{{item.userID}}</p>
+												</view>
+											</view>
+											<view class="no-video" v-if="!item.hasVideo && !item.muteVideo">
+												<image class="image"
+													src="../../static/components/trtc-room/static/static/mute-camera-white.png">
+												</image>
+												<view class="text">
+													<p>{{item.userID}}</p>
+												</view>
+												<view class="text">
+													<p>对方摄像头未打开</p>
+												</view>
+											</view>
+											<view class="no-audio" v-if="!item.hasAudio">
+												<image class="image"
+													src="../../static/components/trtc-room/static/static/mute-mic-white.png">
+												</image>
+											</view>
+											<view class="audio-volume" v-if="item.hasAudio">
+												<image class="image"
+													src="../../static/components/trtc-room/static/static/micro-open.png">
+												</image>
+												<view class="audio-active" :style="'height:' + item.volume + '%'">
+													<image class="image"
+														src="../../static/components/trtc-room/static/static/audio-active.png">
+													</image>
+												</view>
+											</view>
+											<view class="operation-bar">
+												<view class="operation-item-container">
+													<view class="operation-item" @tap.stop="handleSubscribeRemoteAudioFun"
+														:data-user-i-d="item.userID"
+														:data-stream-type="item.streamType">
+														<image class="item-image"
+															:src="item.muteAudio? '../../static/components/trtc-room/static/speaker-false.png': '../../static/components/trtc-room/static/speaker-white.png'">
+														</image>
+													</view>
+													<view class="operation-item" @tap.stop="handleSubscribeRemoteVideoFun"
+														:data-user-i-d="item.userID"
+														:data-stream-type="item.streamType">
+														<image class="item-image"
+															:src="item.muteVideo? '../../static/components/trtc-room/static/display-pause-false.png': '../../static/components/trtc-room/static/display-play-white.png'">
+														</image>
+													</view>
+													<view class="operation-item" @tap="toggleFullscreenFun"
+														:data-user-i-d="item.userID"
+														:data-stream-type="item.streamType">
+														<image class="item-image"
+															src="../../static/components/trtc-room/static/static/fullscreen-white.png">
+														</image>
+													</view>
+												</view>
+											</view>
+										</view>
+
+										<view v-for="(item, index) in gridPagePlaceholderStreamList" :key="index"
+											class="view-container player-container player-placeholder">
+											<image class="image"
+												src="../../static/components/trtc-room/static/static/mute-camera-white.png">
+											</image>
+										</view>
+									</view>
 								</view>
 							</view>
-							<progress class="volume-progress" :percent="item.volume" stroke-width="4"></progress>
+							<view class="column-2">
+								<view class="menu" v-if="!isShowMoreMenu">
+									<view class="menu-item" @tap="switchSettingPanelFun">
+										<image class="image"
+											src="../../static/components/trtc-room/static/static/setting-white.png">
+										</image>
+									</view>
+									<view class="menu-item" @tap="switchMemberListPanelFun">
+										<image class="image"
+											src="../../static/components/trtc-room/static/static/list-white.png">
+										</image>
+									</view>
+									<view class="menu-item" @tap="hangUpFun">
+										<image class="image"
+											src="../../static/components/trtc-room/static/static/hangup-red.png">
+										</image>
+									</view>
+									<view class="menu-item" @tap="toggleIMPanelFun">
+										<image class="image"
+											:src="enableIM? '../../static/components/trtc-room/static/im-white.png': '../../static/components/trtc-room/static/im-disable.png'">
+										</image>
+									</view>
+								</view>
+							</view>
+
 						</view>
-						<view :class="'view-container pusher-container ' + (pusher.isVisible ? '' : 'none')">
-							<live-pusher
-								class="pusher"
-								:url="pusher.url"
-								:mode="pusher.mode"
-								:autopush="pusher.autopush"
-								:enable-camera="pusher.enableCamera"
-								:enable-mic="pusher.enableMic"
-								:enable-agc="pusher.enableAgc"
-								:enable-ans="pusher.enableAns"
-								:enable-ear-monitor="pusher.enableEarMonitor"
-								:auto-focus="pusher.enableAutoFocus"
-								:zoom="pusher.enableZoom"
-								:min-bitrate="pusher.minBitrate"
-								:max-bitrate="pusher.maxBitrate"
-								:video-width="pusher.videoWidth"
-								:video-height="pusher.videoHeight"
-								:beauty="pusher.beautyLevel"
-								:whiteness="pusher.whitenessLevel"
-								:orientation="pusher.videoOrientation"
-								:aspect="pusher.videoAspect"
-								:device-position="pusher.frontCamera"
-								:remote-mirror="pusher.enableRemoteMirror"
-								:local-mirror="pusher.localMirror"
-								:background-mute="pusher.enableBackgroundMute"
-								:audio-quality="pusher.audioQuality"
-								:audio-volume-type="pusher.audioVolumeType"
-								:audio-reverb-type="pusher.audioReverbType"
-								:waiting-image="pusher.waitingImage"
-								:debug="debug"
-								@statechange="pusherStateChangeHandlerFun"
-								@netstatus="pusherNetStatusHandlerFun"
-								@error="pusherErrorHandlerFun"
-								@bgmstart="pusherBGMStartHandlerFun"
-								@bgmprogress="pusherBGMProgressHandlerFun"
-								@bgmcomplete="pusherBGMCompleteHandlerFun"
-							></live-pusher>
-							<view class="operation-bar">
-								<view class="btn-normal" @tap="switchMemberListPanelFun"><image src="../../static/components/trtc-room/static/list.png"></image></view>
-								<view class="btn-normal" @tap="switchSettingPanelFun"><image src="../../static/components/trtc-room/static/setting.png"></image></view>
-								<view class="btn-normal btn-hangup" @tap="hangUpFun"><image src="../../static/components/trtc-room/static/hangup.png"></image></view>
-							</view>
+
+						<view class="pages-container" v-if="gridPageCount > 1">
+							<view v-for="(item, index) in gridPageCount" :key="index"
+								:class="'page-item ' + (index+1 === gridCurrentPage? 'current':'')"></view>
 						</view>
 						<view :class="'panel memberlist-panel ' + (panelName === 'memberlist-panel' ? '' : 'none')">
 							<view @tap="handleMaskerClickFun" class="close-btn">X</view>
@@ -217,44 +271,23 @@
 							<view class="panel-body">
 								<view class="panel-tips" v-if="streamList.length === 0">暂无成员</view>
 								<scroll-view class="scroll-container" scroll-y="true">
-									<view class="member-item" v-for="(item, streamID) in streamList" :key="streamID">
-										<view class="member-id">{{ item.userID }}</view>
+									<view v-for="(item, index) in streamList" :key="index" class="member-item">
+										<view class="member-id">{{item.userID}}</view>
 										<view class="member-btns">
-											<button
-												class="btn"
-												hover-class="btn-hover"
-												:data-userid="item.userID"
-												:data-streamtype="item.streamType"
-												data-key="objectFit"
+											<button class="btn" hover-class="btn-hover" :data-userid="item.userID"
+												:data-streamtype="item.streamType" data-key="objectFit"
 												data-value="fillCrop|contain"
-												@tap="setPlayerPropertyFun"
-											>
-												{{ item.objectFit === 'fillCrop' ? '填充' : '适应' }}
-											</button>
-											<button
-												class="btn"
-												hover-class="btn-hover"
-												:data-userid="item.userID"
-												:data-streamtype="item.streamType"
-												data-key="orientation"
+												@tap="setPlayerPropertyFun">{{item.objectFit === 'fillCrop'? '填充':'适应'}}</button>
+											<button class="btn" hover-class="btn-hover" :data-userid="item.userID"
+												:data-streamtype="item.streamType" data-key="orientation"
 												data-value="vertical|horizontal"
-												@tap="setPlayerPropertyFun"
-											>
-												{{ item.orientation === 'vertical' ? '竖屏' : '横屏' }}
-											</button>
-											<button
-												class="btn"
-												hover-class="btn-hover"
-												:data-userid="item.userID"
+												@tap="setPlayerPropertyFun">{{item.orientation === 'vertical'? '竖屏':'横屏'}}</button>
+											<button class="btn" hover-class="btn-hover" :data-userid="item.userID"
+												:data-streamtype="item.streamType" @tap="switchStreamTypeFun"
+												v-if="item.streamType === 'main'">{{item._definitionType === 'small'? '小画面':'主画面'}}</button>
+											<button class="btn" hover-class="btn-hover" :data-userid="item.userID"
 												:data-streamtype="item.streamType"
-												@tap="switchStreamTypeFun"
-												v-if="item.streamType === 'main'"
-											>
-												{{ item._definitionType === 'small' ? '小画面' : '主画面' }}
-											</button>
-											<button class="btn" hover-class="btn-hover" :data-userid="item.userID" :data-streamtype="item.streamType" @tap="handleSnapshotClickFun">
-												截屏
-											</button>
+												@tap="handleSnapshotClickFun">截屏</button>
 										</view>
 									</view>
 								</scroll-view>
@@ -268,772 +301,1031 @@
 									<view class="setting-option">
 										<view class="label">启用摄像头</view>
 										<view class="btn-normal" @tap="toggleVideoFun">
-											<image
-												:src="
-													pusher.enableCamera
-														? '../../static/components/trtc-room/static/camera-true.png'
-														: '../../static/components/trtc-room/static/camera-false.png'
-												"
-											></image>
+											<image class="btn-image"
+												:src="pusher.enableCamera? '../../static/components/trtc-room/static/camera-true.png': '../../static/components/trtc-room/static/camera-false.png'">
+											</image>
 										</view>
 									</view>
 									<view class="setting-option">
 										<view class="label">启用麦克风</view>
 										<view class="btn-normal" @tap="toggleAudioFun">
-											<image
-												:src="
-													pusher.enableMic
-														? '../../static/components/trtc-room/static/audio-true.png'
-														: '../../static/components/trtc-room/static/audio-false.png'
-												"
-											></image>
+											<image class="btn-image"
+												:src="pusher.enableMic? '../../static/components/trtc-room/static/audio-true.png': '../../static/components/trtc-room/static/audio-false.png'">
+											</image>
 										</view>
 									</view>
 									<view class="setting-option">
 										<view class="label">切换摄像头</view>
-										<view class="btn-normal" @tap="switchCamera"><image src="../../static/components/trtc-room/static/switch.png"></image></view>
+										<view class="btn-normal" @tap="switchCamera">
+											<image class="btn-image"
+												src="../../static/components/trtc-room/static/static/switch.png">
+											</image>
+										</view>
 									</view>
 									<view class="setting-option">
 										<view class="label">开启美颜</view>
-										<switch
-											color="#006eff"
-											:checked="pusher.beautyLevel == 9 ? true : false"
-											data-key="beautyLevel"
-											data-value="9|0"
-											@change="setPuserPropertyFun"
-										></switch>
+										<switch class="setting-switch" color="#006eff"
+											:checked="pusher.beautyLevel == 9 ? true: false" data-key="beautyLevel"
+											data-value="9|0" data-value-type="number" @change="setPuserPropertyFun">
+										</switch>
 									</view>
 									<view class="setting-option">
 										<view class="label">开启AGC</view>
-										<switch color="#006eff" :checked="pusher.enableAgc" data-key="enableAgc" data-value="true" @change="setPuserPropertyFun"></switch>
+										<switch class="setting-switch" color="#006eff" :checked="pusher.enableAgc"
+											data-key="enableAgc" data-value="true" data-value-type="boolean"
+											@change="setPuserPropertyFun"></switch>
 									</view>
 									<view class="setting-option">
 										<view class="label">开启ANS</view>
-										<switch color="#006eff" :checked="pusher.enableAns" data-key="enableAns" data-value="true" @change="setPuserPropertyFun"></switch>
+										<switch class="setting-switch" color="#006eff" :checked="pusher.enableAns"
+											data-key="enableAns" data-value="true" data-value-type="boolean"
+											@change="setPuserPropertyFun"></switch>
 									</view>
 									<view class="setting-option">
 										<view class="label">开启横屏推流</view>
-										<switch
-											color="#006eff"
-											:checked="pusher.videoOrientation === 'vertical' ? false : true"
-											data-key="videoOrientation"
-											data-value="horizontal|vertical"
-											@change="setPuserPropertyFun"
-										></switch>
+										<switch class="setting-switch" color="#006eff"
+											:checked="pusher.videoOrientation === 'vertical' ? false: true"
+											data-key="videoOrientation" data-value="horizontal|vertical"
+											data-value-type="string" @change="setPuserPropertyFun"></switch>
 									</view>
 								</scroll-view>
 							</view>
 						</view>
-						<view :class="'masker ' + (panelName == '' ? 'none' : '')" @tap="handleMaskerClickFun"></view>
-					</view>
-				</view>
-			</view>
-			<view v-if="template === 'custom'">
-				<view data-type="template" data-is="custom" data-attr="pusher, streamList, debug">
-					<view class="template-custom">
-						<view class="players-container">
-							<view
-								v-for="(item, streamID) in streamList"
-								:key="streamID"
-								v-if="item.src && (item.hasVideo || item.hasAudio)"
-								:class="'view-container player-container ' + (item.isVisible ? '' : 'none')"
-								:style="'left:' + item.xAxis + 'top:' + item.yAxis + 'width:' + item.width + 'height:' + item.height + 'zindex:' + item.zindex + ''"
-							>
-								<live-player
-									class="player"
-									:data-userid="item.userID"
-									:data-streamid="item.streamID"
-									:data-streamtype="item.streamType"
-									:src="item.src"
-									:mode="item.mode"
-									:autoplay="item.autoplay"
-									:mute-audio="item.muteAudio"
-									:mute-video="item.muteVideo"
-									:orientation="item.orientation"
-									:object-fit="item.objectFit"
-									:background-mute="item.enableBackgroundMute"
-									:min-cache="item.minCache"
-									:max-cache="item.maxCache"
-									:sound-mode="item.soundMode"
-									:enable-recv-message="item.enableRecvMessage"
-									:auto-pause-if-navigate="item.autoPauseIfNavigate"
-									:auto-pause-if-open-native="item.autoPauseIfOpenNative"
-									:debug="debug"
-									@statechange="playerStateChangeFun"
-									@fullscreenchange="playerFullscreenChangeFun"
-									@netstatus="playerNetStatusFun"
-									@audiovolumenotify="playerAudioVolumeNotifyFun"
-									:idAttr="item.streamID"
-								></live-player>
+						<view :class="'panel bgm-panel ' + (panelName === 'bgm-panel' ? '' : 'none')">
+							<view @tap="handleMaskerClickFun" class="close-btn">X</view>
+							<view class="panel-header">背景音乐</view>
+							<view class="panel-body">
+								<view class="setting-option">
+									<view class="label">MIC音量</view>
+									<view class="slider-content">
+										<slider :value="MICVolume" min="0" max="100" show-value="true"
+											activeColor="#006eff" @change="changePropertyFun"
+											data-property-name="MICVolume"></slider>
+									</view>
+								</view>
+								<view class="setting-option">
+									<view class="label">BGM音量</view>
+									<view class="slider-content">
+										<slider :value="BGMVolume" min="0" max="100" show-value="true"
+											activeColor="#006eff" @change="changePropertyFun"
+											data-property-name="BGMVolume"></slider>
+									</view>
+								</view>
+								<view class="setting-option">
+									<view class="label">播放进度</view>
+									<view class="slider-content">
+										<progress activeColor="#006eff" :percent="BGMProgress"></progress>
+									</view>
+								</view>
+								<view class="menu">
+									<view class="menu-item" @tap="handleBGMOperationFun" data-operation-name="playBGM">
+										<view class="label">播放</view>
+									</view>
+									<view class="menu-item" @tap="handleBGMOperationFun" data-operation-name="pauseBGM">
+										<view class="label">暂停</view>
+									</view>
+									<view class="menu-item" @tap="handleBGMOperationFun" data-operation-name="resumeBGM">
+										<view class="label">继续</view>
+									</view>
+									<view class="menu-item" @tap="handleBGMOperationFun" data-operation-name="stopBGM">
+										<view class="label">停止</view>
+									</view>
+								</view>
 							</view>
 						</view>
-						<view
-							:class="'view-container pusher-container ' + (pusher.isVisible ? '' : 'none')"
-							:style="'left:' + pusher.xAxis + 'top:' + pusher.yAxis + 'width:' + pusher.width + 'height:' + pusher.height + 'zindex:' + pusher.zindex + ''"
-						>
-							<live-pusher
-								class="pusher"
-								:url="pusher.url"
-								:mode="pusher.mode"
-								:autopush="pusher.autopush"
-								:enable-camera="pusher.enableCamera"
-								:enable-mic="pusher.enableMic"
-								:enable-agc="pusher.enableAgc"
-								:enable-ans="pusher.enableAns"
-								:enable-ear-monitor="pusher.enableEarMonitor"
-								:auto-focus="pusher.enableAutoFocus"
-								:zoom="pusher.enableZoom"
-								:min-bitrate="pusher.minBitrate"
-								:max-bitrate="pusher.maxBitrate"
-								:video-width="pusher.videoWidth"
-								:video-height="pusher.videoHeight"
-								:beauty="pusher.beautyLevel"
-								:whiteness="pusher.whitenessLevel"
-								:orientation="pusher.videoOrientation"
-								:aspect="pusher.videoAspect"
-								:device-position="pusher.frontCamera"
-								:remote-mirror="pusher.enableRemoteMirror"
-								:local-mirror="pusher.localMirror"
-								:background-mute="pusher.enableBackgroundMute"
-								:audio-quality="pusher.audioQuality"
-								:audio-volume-type="pusher.audioVolumeType"
-								:audio-reverb-type="pusher.audioReverbType"
-								:waiting-image="pusher.waitingImage"
-								:debug="debug"
-								@statechange="pusherStateChangeHandlerFun"
-								@netstatus="pusherNetStatusHandlerFun"
-								@error="pusherErrorHandlerFun"
-								@bgmstart="pusherBGMStartHandlerFun"
-								@bgmprogress="pusherBGMProgressHandlerFun"
-								@bgmcomplete="pusherBGMCompleteHandlerFun"
-							></live-pusher>
+						<view :class="'masker ' + (panelName =='' ? 'none' : '')" @tap="handleMaskerClickFun"></view>
+					</view>
+				</block>
+			</block>
+			<block v-if="template === 'custom'">
+				<block data-type="template" data-is="custom" data-attr="pusher, streamList, debug">
+					<view class="template-custom">
+						<view class="players-container">
+							<view v-for="(item, index) in streamList" :key="index"
+								v-if="item.src && (item.hasVideo || item.hasAudio)"
+								:class="'view-container player-container ' + (item.isVisible?'':'none')"
+								:style="'left:' + item.xAxis + 'top:' + item.yAxis + 'width:' + item.width + 'height:' + item.height + 'z-index:' + item.zIndex + ''">
+								<live-player class="player" :id="item.streamID" :data-userid="item.userID"
+									:data-streamid="item.streamID" :data-streamtype="item.streamType" :src="item.src"
+									:mode="item.mode" :autoplay="item.autoplay" :mute-audio="item.muteAudio"
+									:mute-video="item.muteVideo" :orientation="item.orientation"
+									:object-fit="item.objectFit" :background-mute="item.enableBackgroundMute"
+									:min-cache="item.minCache" :max-cache="item.maxCache" :sound-mode="item.soundMode"
+									:enable-recv-message="item.enableRecvMessage"
+									:auto-pause-if-navigate="item.autoPauseIfNavigate"
+									:auto-pause-if-open-native="item.autoPauseIfOpenNative" :debug="debug"
+									@statechange="playerStateChangeFun" @fullscreenchange="playerFullscreenChangeFun"
+									@netstatus="playerNetStatusFun" @audiovolumenotify="playerAudioVolumeNotifyFun">
+								</live-player>
+							</view>
+						</view>
+						<view :class="'view-container pusher-container ' + (pusher.isVisible?'':'none')"
+							:style="'left:' + pusher.xAxis + 'top:' + pusher.yAxis + 'width:' + pusher.width + 'height:' + pusher.height + 'z-index:' + pusher.zIndex + ''">
+							<live-pusher class="pusher" :url="pusher.url" :mode="pusher.mode"
+								:autopush="pusher.autopush" :enable-camera="pusher.enableCamera"
+								:enable-mic="pusher.enableMic" :muted="!pusher.enableMic" :enable-agc="pusher.enableAgc"
+								:enable-ans="pusher.enableAns" :enable-ear-monitor="pusher.enableEarMonitor"
+								:auto-focus="pusher.enableAutoFocus" :zoom="pusher.enableZoom"
+								:min-bitrate="pusher.minBitrate" :max-bitrate="pusher.maxBitrate"
+								:video-width="pusher.videoWidth" :video-height="pusher.videoHeight"
+								:beauty="pusher.beautyLevel" :whiteness="pusher.whitenessLevel"
+								:orientation="pusher.videoOrientation" :aspect="pusher.videoAspect"
+								:device-position="pusher.frontCamera" :remote-mirror="pusher.enableRemoteMirror"
+								:local-mirror="pusher.localMirror" :background-mute="pusher.enableBackgroundMute"
+								:audio-quality="pusher.audioQuality" :audio-volume-type="pusher.audioVolumeType"
+								:audio-reverb-type="pusher.audioReverbType" :waiting-image="pusher.waitingImage"
+								:debug="debug" @statechange="pusherStateChangeHandlerFun"
+								@netstatus="pusherNetStatusHandlerFun" @error="pusherErrorHandlerFun"
+								@bgmstart="pusherBGMStartHandlerFun" @bgmprogress="pusherBGMProgressHandlerFun"
+								@bgmcomplete="pusherBGMCompleteHandlerFun" @audiovolumenotify="pusherAudioVolumeNotifyFun">
+							</live-pusher>
 						</view>
 					</view>
+				</block>
+			</block>
+
+			<view class="im-panel" v-if="enableIM && showIMPanel">
+				<view class="message-panel-body">
+					<scroll-view scroll-y="true" class="message-scroll-container"
+						:scroll-into-view="'message' + (messageList.length-1)" scroll-with-animation="true">
+						<view class="message-list">
+							<view v-for="(item, index) in messageList" :key="index" class="message-item"
+								:id="'message' + index">
+								<span
+									:class="'user-name ' + (item.name == config.userID?'mine':'')">{{item.name}}</span>
+								<span class="message-content">{{item.message}}</span>
+							</view>
+							<view id="message-bottom"></view>
+						</view>
+					</scroll-view>
+
 				</view>
+				<view class="message-panel-bottom">
+					<view class="message-input-container">
+						<input class="message-input" type="text" :value="messageContent" @input="inputIMMessageFun"
+							@confirm="sendIMMessageFun" confirm-type="send" placeholder="请输入消息" maxlength="200"
+							placeholder-style="color:#ffffff;opacity: 0.55;"></input>
+					</view>
+					<view class="message-send-btn">
+						<button class="btn" @tap="sendIMMessageFun" hover-class="btn-hover">发送</button>
+					</view>
+				</view>
+				<view @tap="toggleIMPanelFun" class="close-btn">X</view>
 			</view>
-			<view :class="'debug-info-btn ' + (debugMode && !debugPanel ? '' : 'none')"><button @tap="debugTogglePanelFun" hover-class="button-hover">Debug</button></view>
-			<view :class="'debug-info ' + (debugMode && debugPanel ? '' : 'none')">
+
+			<view :class="'debug-info-btn ' + (debugMode && !debugPanel?'':'none')">
+				<button class="debug-btn" @tap="debugTogglePanelFun" hover-class="button-hover">Debug</button>
+			</view>
+			<view :class="'debug-info ' + (debugMode && debugPanel?'':'none')">
 				<view @tap="debugTogglePanelFun" class="close-btn">X</view>
-				<view>appVersion: {{ appVersion }}</view>
-				<view>libVersion: {{ libVersion }}</view>
-				<view>template: {{ template }}</view>
-				<view>
-					debug:
-					<button :class="debug ? '' : 'false'" @tap="debugToggleVideoDebugFun" hover-class="button-hover">{{ debug }}</button>
+				<view>appVersion: {{appVersion}}</view>
+				<view>libVersion: {{libVersion}}</view>
+				<view>template: {{template}}</view>
+				<view>debug: <button :class="(debug?'':'false') + ' debug-btn'" @tap="debugToggleVideoDebugFun"
+						hover-class="button-hover">{{debug}}</button></view>
+				<view>userID: {{pusher.userID}}</view>
+				<view>roomID: {{pusher.roomID}}</view>
+				<view>camera: <button :class="(pusher.enableCamera?'':'false') + ' debug-btn'" @tap="toggleVideoFun"
+						hover-class="button-hover">{{pusher.enableCamera}}</button></view>
+				<view>mic: <button :class="(pusher.enableMic?'':'false') + ' debug-btn'" @tap="toggleAudioFun"
+						hover-class="button-hover">{{pusher.enableMic}}</button></view>
+				<view>switch camera: <button class="debug-btn" @tap="switchCamera"
+						hover-class="button-hover">{{cameraPosition||pusher.frontCamera}}</button></view>
+				<view>Room:
+					<button class="debug-btn" @tap="debugEnterRoomFun" hover-class="button-hover">Enter</button>
+					<button class="debug-btn" @tap="debugExitRoomFun" hover-class="button-hover">Exit</button>
+					<button class="debug-btn" @tap="debugGoBackFun" hover-class="button-hover">Go back</button>
 				</view>
-				<view>userID: {{ pusher.userID }}</view>
-				<view>roomID: {{ pusher.roomID }}</view>
-				<view>
-					camera:
-					<button :class="pusher.enableCamera ? '' : 'false'" @tap="toggleVideoFun" hover-class="button-hover">{{ pusher.enableCamera }}</button>
+				<view>IM: <button class="debug-btn" @tap="debugSendRandomMessageFun"
+						hover-class="button-hover">send</button></view>
+				<view>user count: {{userList.length}}</view>
+				<view v-for="(item, index) in userList" :key="index">{{item.userID}}|
+					mainV:<span
+						:class="'text ' + (item.hasMainVideo? 'true' : 'false' )">{{item.hasMainVideo||false}}</span>|
+					mainA:<span
+						:class="'text ' + (item.hasMainAudio? 'true' : 'false' )">{{item.hasMainAudio||false}}</span>|
+					auxV:<span
+						:class="'text ' + (item.hasAuxVideo? 'true' : 'false' )">{{item.hasAuxVideo||false}}</span>
 				</view>
-				<view>
-					mic:
-					<button :class="pusher.enableMic ? '' : 'false'" @tap="toggleAudioFun" hover-class="button-hover">{{ pusher.enableMic }}</button>
-				</view>
-				<view>
-					switch camera:
-					<button @tap="switchCamera" hover-class="button-hover">{{ cameraPosition || pusher.frontCamera }}</button>
-				</view>
-				<view>
-					Room:
-					<button @tap="debugEnterRoomFun" hover-class="button-hover">Enter</button>
-					<button @tap="debugExitRoomFun" hover-class="button-hover">Exit</button>
-					<button @tap="debugGoBackFun" hover-class="button-hover">Go back</button>
-				</view>
-				<view>user count: {{ userList.length }}</view>
-				<view v-for="(item, userID) in userList" :key="userID">
-					{{ item.userID }}|mainV:{{ item.hasMainVideo || false }}|mainA:{{ item.hasMainAudio || false }}|auxV:{{ item.hasAuxVideo || false }}
-				</view>
-				<view>stream count: {{ streamList.length }}</view>
-				<view v-for="(item, streamID) in streamList" :key="streamID">
-					{{ item.userID }}|{{ item.streamType }}| SubV:
-					<button
-						:class="!item.muteVideo ? '' : 'false'"
-						@tap="debugToggleRemoteVideoFun"
-						hover-class="button-hover"
-						:data-user-i-d="item.userID"
-						:data-stream-type="item.streamType"
-					>
-						{{ !item.muteVideo }}
-					</button>
-					| SubA:
-					<button
-						:class="!item.muteAudio ? '' : 'false'"
-						@tap="debugToggleRemoteAudioFun"
-						hover-class="button-hover"
-						:data-user-i-d="item.userID"
-						:data-stream-type="item.streamType"
-					>
-						{{ !item.muteAudio }}
-					</button>
-				</view>
+				<view>stream count: {{streamList.length}}</view>
+				<view v-for="(item, index) in streamList" :key="index">{{item.userID}}|{{item.streamType}}|
+					SubV:<button :class="(!item.muteVideo?'':'false') + ' debug-btn'" @tap="debugToggleRemoteVideoFun"
+						hover-class="button-hover" :data-user-i-d="item.userID"
+						:data-stream-type="item.streamType">{{!item.muteVideo}}</button>|
+					SubA:<button :class="(!item.muteAudio?'':'false') + ' debug-btn'" @tap="debugToggleRemoteAudioFun"
+						hover-class="button-hover" :data-user-i-d="item.userID"
+						:data-stream-type="item.streamType">{{!item.muteAudio}}</button></view>
 			</view>
 		</view>
 	</view>
 </template>
 
 <script>
-import { setData } from '../../debug/GenerateTestUserSig';
-import UserController from './controller/user-controller';
-import Pusher from './model/pusher';
-import { EVENT } from './common/constants';
-import Event from './utils/event';
-import * as ENV from './utils/environment';
-const TAG_NAME = 'TRTC-ROOM';
+	import UserController from "./controller/user-controller";
+	import Pusher from "./model/pusher";
+	import {
+		EVENT,
+		DEFAULT_COMPONENT_CONFIG
+	} from "./common/constants";
+	import Event from "./utils/event";
+	import * as ENV from "./utils/environment";
+	import TIM from "./libs/tim-wx";
+	import MTA from "./libs/mta_analysis";
+	const TAG_NAME = 'TRTC-ROOM';
+	const IM_GROUP_TYPE = TIM.TYPES
+	.GRP_CHATROOM; // TIM.TYPES.GRP_CHATROOM 体验版IM无数量限制，成员20个， TIM.TYPES.GRP_AVCHATROOM IM体验版最多10个，升级后无限制
+	// TIM.TYPES.GRP_CHATROOM 体验版IM无数量限制，成员20个， TIM.TYPES.GRP_AVCHATROOM IM体验版最多10个，升级后无限制
+	let touchX = 0;
+	let touchY = 0;
 
-export default {
-	data() {
-		return {
-			pusher: null,
-			// debugMode: false, // 是否开启调试模式
-			debugPanel: true,
-			// 是否打开组件调试面板
-			debug: false,
-			// 是否打开player pusher 的调试信息
-			streamList: [],
-			// 用于渲染player列表,存储stram
-			userList: [],
-			// 扁平化的数据用来返回给用户
-			template: '',
-			// 不能设置默认值，当默认值和传入组件的值不一致时，iOS渲染失败
-			cameraPosition: '',
-			panelName: '',
-			// 控制面板名称，包括 setting-panel  memberlist-panel
-			localVolume: 0,
-			remoteVolumeList: [],
-			appVersion: ENV.APP_VERSION,
-			libVersion: ENV.LIB_VERSION,
-			debugMode: ''
-		};
-	},
-
-	components: {},
-	props: {
-		// 必要的初始化参数
-		config: {
-			type: Object,
-			default: () => ({
-				sdkAppID: '',
-				userID: '',
-				userSig: '',
+	export default {
+		data() {
+			return {
+				pusher: null,
+				debugPanel: true,
+				// 是否打开组件调试面板
+				debug: false,
+				// 是否打开player pusher 的调试信息
+				streamList: [],
+				// 用于渲染player列表,存储stram
+				visibleStreamList: [],
+				// 有音频或者视频的StreamList
+				userList: [],
+				// 扁平化的数据用来返回给用户
 				template: '',
-				debugMode: ''
-			})
-		}
-	},
-	watch: {
-		streamList(newVal, oldVal){
-			console.log('streamList::::::::',newVal, oldVal)
-			this.streamList = newVal
+				// 不能设置默认值，当默认值和传入组件的值不一致时，iOS渲染失败
+				cameraPosition: '',
+				// 摄像头位置，用于debug
+				panelName: '',
+				// 控制面板名称，包括 setting-panel  memberlist-panel
+				localVolume: 0,
+				remoteVolumeList: [],
+				enableIM: false,
+				// 用于组件内渲染
+				showIMPanel: false,
+				exitIMThrottle: false,
+				messageContent: '',
+				messageList: [],
+				// 仅保留10条消息
+				maxMessageListLength: 10,
+				messageListScrollTop: 0,
+				appVersion: ENV.APP_VERSION,
+				libVersion: ENV.LIB_VERSION,
+				hasGridPageTipsShow: false,
+				gridPageCount: 0,
+				// grid 布局 player 分页的总页数
+				gridCurrentPage: 1,
+				// grid 布局 当前页码
+				gridPlayerPerPage: 4,
+				// grid 布局每页 player的数量, 如果大于3，在逻辑里第一页需要减1。等于3 pusher 在每一页都出现。可选值: 3,4
+				gridPagePlaceholderStreamList: [],
+				// 占位数量
+				isFullscreenDevice: ENV.IS_FULLSCREEN_DEVICE,
+				isShowMoreMenu: false,
+				MICVolume: 50,
+				BGMVolume: 50,
+				BGMProgress: 0,
+				beautyStyle: 'smooth',
+				beautyStyleArray: [{
+					value: 'smooth',
+					label: '光滑',
+					checked: true
+				}, {
+					value: 'nature',
+					label: '自然',
+					checked: false
+				}, {
+					value: 'close',
+					label: '关闭',
+					checked: false
+				}],
+				filterIndex: 0,
+				filterArray: [{
+					value: 'standard',
+					label: '标准'
+				}, {
+					value: 'pink',
+					label: '粉嫩'
+				}, {
+					value: 'nostalgia',
+					label: '怀旧'
+				}, {
+					value: 'blues',
+					label: '蓝调'
+				}, {
+					value: 'romantic',
+					label: '浪漫'
+				}, {
+					value: 'cool',
+					label: '清凉'
+				}, {
+					value: 'fresher',
+					label: '清新'
+				}, {
+					value: 'solor',
+					label: '日系'
+				}, {
+					value: 'aestheticism',
+					label: '唯美'
+				}, {
+					value: 'whitening',
+					label: '美白'
+				}, {
+					value: 'cerisered',
+					label: '樱红'
+				}],
+				audioReverbType: 0,
+				audioReverbTypeArray: ['关闭', 'KTV', '小房间', '大会堂', '低沉', '洪亮', '金属声', '磁性'],
+				debugMode: ""
+			};
 		},
-		config: {
-			handler: function(newVal, oldVal) {
-				console.log('watch config');
-				this.propertyObserverFun({
-					name: 'config',
-					newVal,
-					oldVal
-				});
-			},
-			deep: true
-		}
-	},
-	created: function() {
-		// 在组件实例刚刚被创建时执行
-		console.log(TAG_NAME, 'created', ENV);
-	},
-	beforeMount: function() {
-		// 在组件实例进入页面节点树时执行
-		console.log(TAG_NAME, 'attached');
-		this.initFun();
-	},
-	mounted: function() {
-		// 在组件在视图层布局完成后执行
-		console.log(TAG_NAME, 'ready');
-	},
-	destroyed: function() {
-		// 在组件实例被从页面节点树移除时执行
-		console.log(TAG_NAME, 'detached'); // 停止所有拉流，并重置数据
 
-		this.exitRoom();
-	},
-	error: function(error) {
-		// 每当组件方法抛出错误时执行
-		console.log(TAG_NAME, 'error', error);
-	},
-	onPageShow: function() {
-		// 组件所在的页面被展示时执行
-		console.log(TAG_NAME, 'show status:', this.status);
+		components: {},
+		props: {
+			// 必要的初始化参数
+			config: {
+				type: Object,
+				default: () => ({
+					sdkAppID: '',
+					userID: '',
+					userSig: '',
+					template: '',
+					debugMode: false,
+					// 是否开启调试模式
+					enableIM: false // 是否开启 IM
 
-		if (this.status.isPending) {
-			// 经历了 5000 挂起事件
-			this.status.isPending = false;
-		}
-
-		if (this.status.isPush) {
-			// 小程序hide - show 有一定概率本地黑屏或静止，远端正常，或者远端和本地同时黑屏或静止，需要手动启动预览，非必现
-			// this.data.pusher.getPusherContext().startPreview()
-			// this.data.pusher.getPusherContext().resume()
-		}
-	},
-	onPageHide: function() {
-		// 组件所在的页面被隐藏时执行
-		console.log(TAG_NAME, 'hide');
-	},
-	onPageResize: function(size) {
-		// 组件所在的页面尺寸变化时执行
-		console.log(TAG_NAME, 'resize', size);
-	},
-	methods: {
-		setData,
-		/**
-		 * 初始化各项参数和用户控制模块，在组件实例触发 attached 时调用，此时不建议对View进行变更渲染（调用setData方法）
-		 */
-		initFun: function() {
-			console.log(TAG_NAME, '_init');
-			this.userController = new UserController(this);
-			this._emitter = new Event();
-			this.EVENT = EVENT;
-			this.initStatusFun();
-			this.bindEventFun();
-			this.bindEventGridFun();
-			console.log(TAG_NAME, '_init success component:', this);
+				})
+			}
 		},
-
-		/**
-		 * 进房
-		 * @param {Object} params 必传 roomID 取值范围 1 ~ 4294967295
-		 * @returns {Promise}
-		 */
-		enterRoom: function(params) {
-			return new Promise((resolve, reject) => {
-				console.log(TAG_NAME, 'enterRoom');
-				console.log(TAG_NAME, 'params', params);
-				console.log(TAG_NAME, 'config', this.config);
-				console.log(TAG_NAME, 'pusher', this.pusher); // 1. 补齐进房参数，校验必要参数是否齐全
-
-				console.log('进房......', params, this.config, this.pusher);
-				if (params) {
-					Object.assign(this.pusher, params);
-					Object.assign(this.config, params);
-				}
-
-				if (!this.checkParamFun(this.config)) {
-					reject(new Error('缺少必要参数'));
-					return;
-				} // 2. 根据参数拼接 push url，赋值给 live-pusher，
-
-				this.getPushUrlFun(this.config)
-					.then(pushUrl => {
-						this.pusher.url = pushUrl;
-						this.setData(
-							{
-								pusher: this.pusher
-							},
-							() => {
-								console.log(TAG_NAME, 'enterRoom success', this.pusher); // view 渲染成功回调后，开始推流
-
-								this.pusher.getPusherContext().start();
-								this.status.isPush = true;
-								resolve();
-							}
-						);
-					})
-					.catch(res => {
-						// 获取 room sig 失败, 进房失败需要通过 pusher state 事件通知
-						console.error(TAG_NAME, 'enterRoom fail', res);
-						reject(res);
+		watch: {
+			config: {
+				handler: function(newVal, oldVal) {
+					this.propertyObserverFun({
+						'name': 'config',
+						newVal,
+						oldVal
 					});
+				},
+				immediate: true,
+				deep: true
+			}
+		},
+		created: function() {
+			// 在组件实例刚刚被创建时执行
+			console.log(TAG_NAME, 'created', ENV);
+			MTA.App.init({
+				appID: '500710685',
+				eventID: '500710697',
+				autoReport: true,
+				statParam: true
 			});
 		},
+		beforeMount: function() {
+			// 在组件实例进入页面节点树时执行
+			console.log(TAG_NAME, 'attached');
+			this.initFun();
+			MTA.Page.stat();
+		},
+		mounted: function() {
+			// 在组件在视图层布局完成后执行
+			console.log(TAG_NAME, 'ready');
+		},
+		destroyed: function() {
+			// 在组件实例被从页面节点树移除时执行
+			console.log(TAG_NAME, 'detached'); // 停止所有拉流，并重置数据
 
-		/**
-		 * 退房，停止推流和拉流，并重置数据
-		 * @returns {Promise}
-		 */
-		exitRoom: function() {
-			return new Promise((resolve, reject) => {
-				console.log(TAG_NAME, 'exitRoom');
-				this.pusher.reset();
-				this.status.isPush = false;
-				const result = this.userController.reset();
-				this.setData(
-					{
+			this.exitRoom();
+		},
+		error: function(error) {
+			// 每当组件方法抛出错误时执行
+			console.log(TAG_NAME, 'error', error);
+		},
+		onPageShow: function() {
+			// 组件所在的页面被展示时执行
+			console.log(TAG_NAME, 'show status:', this.status);
+
+			if (this.status.isPending) {
+				// 经历了 5000 挂起事件
+				this.status.isPending = false; // 修复iOS 最小化触发5000事件后，音频推流失败的问题
+				// if (ENV.IS_IOS && this.data.pusher.enableMic) {
+				//   this.unpublishLocalAudio().then(()=>{
+				//     this.publishLocalAudio()
+				//   })
+				// }
+				// 经历了 5001 浮窗关闭事件，小程序底层会自动退房，恢复小程序时组件需要重新进房
+				// 重新进房
+
+				this.enterRoom({
+					roomID: this.config.roomID
+				}).then(() => { // 进房后开始推送视频或音频
+					// setTimeout(()=>{
+					//   this.publishLocalVideo()
+					//   this.publishLocalAudio()
+					// }, 2000)
+				});
+			} else if (ENV.IS_ANDROID && this.status.pageLife === 'hide' && this.status.isOnHideAddStream && this
+				.streamList.length > 0) {
+				// 微信没有提供明确的最小化事件，onHide事件，不一定是最小化
+				// 获取所有的player 清空 src 重新赋值 验证无效
+				// 清空 visibleStreamList 重新赋值， 验证无效
+				// 退房重新进房，有效但是成本比较高
+				// 将标记了 isOnHideAdd 的 stream 的 palyer 销毁并重新渲染
+				const streamList = this.streamList;
+				let tempStreamList = []; // 过滤 onHide 时新增的 stream
+
+				for (let i = 0; i < streamList.length; i++) {
+					if (streamList[i].isOnHideAdd && streamList[i].playerContext) {
+						const stream = streamList[i];
+						tempStreamList.push(stream);
+						stream.playerContext = undefined;
+						streamList.splice(i, 1);
+					}
+				} // 设置渲染，销毁onHide 时新增的 player
+
+
+				this.setListFun({
+					streamList: streamList
+				}).then(() => {
+					for (let i = 0; i < tempStreamList.length; i++) {
+						streamList.push(tempStreamList[i]);
+					} // 设置渲染，重新创建 onHide 时新增的 player
+					// setTimeout(()=>{
+
+
+					this.setListFun({
+						streamList: streamList
+					}).then(() => {
+						for (let i = 0; i < tempStreamList.length; i++) {
+							tempStreamList[i] = uni.createLivePlayerContext(tempStreamList[i].streamID,
+								this);
+						}
+
+						tempStreamList = [];
+					}); // }, 500)
+				});
+				this.status.isOnHideAddStream = false;
+			}
+
+			this.status.pageLife = 'show';
+		},
+		onPageHide: function() {
+			// 组件所在的页面被隐藏时执行
+			console.log(TAG_NAME, 'hide');
+			this.status.pageLife = 'hide';
+		},
+		onPageResize: function(size) {
+			// 组件所在的页面尺寸变化时执行
+			console.log(TAG_NAME, 'resize', size);
+		},
+		methods: {
+			/**
+			 * 初始化各项参数和用户控制模块，在组件实例触发 attached 时调用，此时不建议对View进行变更渲染（调用setData方法）
+			 */
+			initFun() {
+				console.log(TAG_NAME, '_init');
+				this.userController = new UserController(this);
+				this._emitter = new Event();
+				this.EVENT = EVENT;
+				this.initStatusFun();
+				this.bindEventFun();
+				this.gridBindEventFun();
+				this.keepScreenOnFun();
+				console.log(TAG_NAME, '_init success component:', this);
+			},
+
+			initStatusFun() {
+				this.status = {
+					isPush: false,
+					// 推流状态
+					isPending: false,
+					// 挂起状态，触发5000事件标记为true，onShow后标记为false
+					pageLife: '',
+					// 页面生命周期 hide, show
+					isOnHideAddStream: false // onHide后有新增Stream
+
+				};
+				this._lastTapTime = 0; // 点击时间戳 用于判断双击事件
+
+				this._beforeLastTapTime = 0; // 点击时间戳 用于判断双击事件
+
+				this._lastTapCoordinate = {
+						x: 0,
+						y: 0
+					}, // 点击时的坐标
+					this._isFullscreen = false; // 是否进入全屏状态
+			},
+
+			/**
+			 * 监听组件属性变更，外部变更组件属性时触发该监听
+			 * @param {Object} data newVal，oldVal
+			 */
+			propertyObserverFun(data) {
+				console.log(TAG_NAME, 'propertyObserverFun', data, this.config);
+
+				if (data.name === 'config') {
+					const config = Object.assign({}, DEFAULT_COMPONENT_CONFIG, data.newVal);
+					console.log(TAG_NAME, 'propertyObserverFun config:', config); // 由于 querystring 只支持 String 类型，做一个类型防御
+
+					if (typeof config.debugMode === 'string') {
+						config.debugMode = config.debugMode === 'true' ? true : false;
+					} // 初始化IM
+
+
+					if (config.enableIM && config.sdkAppID) {
+						this.initIMFun(config);
+					}
+
+					if (config.sdkAppID && data.oldVal.sdkAppID !== config.sdkAppID && MTA) {
+						MTA.Event.stat('sdkAppID', {
+							'value': config.sdkAppID
+						});
+					} // 独立设置与pusher无关的配置
+
+
+					this.setData({
+						enableIM: config.enableIM,
+						template: config.template,
+						debugMode: config.debugMode || false,
+						debug: config.debugMode || false
+					});
+					this.setPusherConfigFun(config);
+				}
+			},
+
+			//  _______             __        __  __
+			//  |       \           |  \      |  \|  \
+			//  | $$$$$$$\ __    __ | $$____  | $$ \$$  _______
+			//  | $$__/ $$|  \  |  \| $$    \ | $$|  \ /       \
+			//  | $$    $$| $$  | $$| $$$$$$$\| $$| $$|  $$$$$$$
+			//  | $$$$$$$ | $$  | $$| $$  | $$| $$| $$| $$
+			//  | $$      | $$__/ $$| $$__/ $$| $$| $$| $$_____
+			//  | $$       \$$    $$| $$    $$| $$| $$ \$$     \
+			//   \$$        \$$$$$$  \$$$$$$$  \$$ \$$  \$$$$$$$
+
+			/**
+			 * 进房
+			 * @param {Object} params 必传 roomID 取值范围 1 ~ 4294967295
+			 * @returns {Promise}
+			 */
+			enterRoom(params) {
+				return new Promise((resolve, reject) => {
+					console.log(TAG_NAME, 'enterRoom');
+					console.log(TAG_NAME, 'params', params);
+					console.log(TAG_NAME, 'config', this.config);
+					console.log(TAG_NAME, 'pusher', this.pusher); // 1. 补齐进房参数，校验必要参数是否齐全
+
+					if (params) {
+						Object.assign(this.pusher, params);
+						Object.assign(this.config, params);
+					}
+
+					if (!this.checkParamFun(this.config)) {
+						reject(new Error('缺少必要参数'));
+						return;
+					} // 2. 根据参数拼接 push url，赋值给 live-pusher，
+
+
+					this.getPushUrlFun(this.config).then(pushUrl => {
+						this.pusher.url = pushUrl;
+						this.setData({
+							pusher: this.pusher
+						}, () => {
+							// 真正进房成功需要通过 1018 事件通知
+							console.log(TAG_NAME, 'enterRoom', this.pusher); // view 渲染成功回调后，开始推流
+
+							this.pusher.getPusherContext().start();
+							this.status.isPush = true;
+							resolve();
+						});
+					}).catch(res => {
+						// 进房失败需要通过 pusher state 事件通知，目前还没有准确的事件通知
+						console.error(TAG_NAME, 'enterRoom error', res);
+						reject(res);
+					}); // 初始化 IM SDK
+					// this._initIM(this.data.config)
+					// 登录IM
+
+					this.loginIMFun({
+						...this.config,
+						roomID: params.roomID
+					});
+				});
+			},
+
+			/**
+			 * 退房，停止推流和拉流，并重置数据
+			 * @returns {Promise}
+			 */
+			exitRoom() {
+				if (this.status.pageLife === 'hide') {
+					// 如果是退后台触发 onHide，不能调用 pusher API
+					console.warn(TAG_NAME, '小程序最小化时不能调用 exitRoom，如果不想听到远端声音，可以调用取消订阅，如果不想远端听到声音，可以调用取消发布');
+				}
+
+				return new Promise((resolve, reject) => {
+					console.log(TAG_NAME, 'exitRoom');
+					this.exitIMFun();
+					this.pusher.reset();
+					this.status.isPush = false;
+					const result = this.userController.reset();
+					this.setData({
 						pusher: this.pusher,
 						userList: result.userList,
-						streamList: result.streamList
-					},
-					() => {
-						// 在销毁页面时调用，不会走到这里
+						streamList: result.streamList,
+						visibleStreamList: this.filterVisibleStreamFun(result.streamList)
+					}, () => {
+						// 在销毁页面时调用exitRoom时，不会走到这里
 						resolve({
 							userList: this.userList,
 							streamList: this.streamList
 						});
-						console.log(TAG_NAME, 'exitRoom success', this.pusher, this.streamList, this.userList);
-					}
-				);
-			});
-		},
+						console.log(TAG_NAME, 'exitRoom success', this.pusher, this.streamList, this
+							.userList); // 20200421 iOS 仍然没有1019事件通知退房，退房事件移动到 exitRoom 方法里，但不是后端通知的退房成功
 
-		/**
-		 * 开启摄像头
-		 * @returns {Promise}
-		 */
-		publishLocalVideo: function() {
-			// 设置 pusher enableCamera
-			console.log(TAG_NAME, 'publishLocalVideo 开启摄像头');
-			return this.setPusherConfigFun({
-				enableCamera: true
-			});
-		},
+						this._emitter.emit(EVENT.LOCAL_LEAVE, {
+							userID: this.pusher.userID
+						});
+					});
+				});
+			},
 
-		/**
-		 * 关闭摄像头
-		 * @returns {Promise}
-		 */
-		unpublishLocalVideo: function() {
-			// 设置 pusher enableCamera
-			console.log(TAG_NAME, 'unpublshLocalVideo 关闭摄像头');
-			return this.setPusherConfigFun({
-				enableCamera: false
-			});
-		},
+			/**
+			 * 开启摄像头
+			 * @returns {Promise}
+			 */
+			publishLocalVideo() {
+				// 设置 pusher enableCamera
+				console.log(TAG_NAME, 'publishLocalVideo 开启摄像头');
+				return this.setPusherConfigFun({
+					enableCamera: true
+				});
+			},
 
-		/**
-		 * 开启麦克风
-		 * @returns {Promise}
-		 */
-		publishLocalAudio: function() {
-			// 设置 pusher enableCamera
-			console.log(TAG_NAME, 'publishLocalAudio 开启麦克风');
-			return this.setPusherConfigFun({
-				enableMic: true
-			});
-		},
+			/**
+			 * 关闭摄像头
+			 * @returns {Promise}
+			 */
+			unpublishLocalVideo() {
+				// 设置 pusher enableCamera
+				console.log(TAG_NAME, 'unpublshLocalVideo 关闭摄像头');
+				return this.setPusherConfigFun({
+					enableCamera: false
+				});
+			},
 
-		/**
-		 * 关闭麦克风
-		 * @returns {Promise}
-		 */
-		unpublishLocalAudio: function() {
-			// 设置 pusher enableCamera
-			console.log(TAG_NAME, 'unpublshLocalAudio 关闭麦克风');
-			return this.setPusherConfigFun({
-				enableMic: false
-			});
-		},
+			/**
+			 * 开启麦克风
+			 * @returns {Promise}
+			 */
+			publishLocalAudio() {
+				// 设置 pusher enableCamera
+				console.log(TAG_NAME, 'publishLocalAudio 开启麦克风');
+				return this.setPusherConfigFun({
+					enableMic: true
+				});
+			},
 
-		/**
-		 * 订阅远端视频 主流 小画面 辅流
-		 * @param {Object} params {userID,streamType} streamType 传入 small 时修改对应的主流url的 streamtype 参数为small
-		 * @returns {Promise}
-		 */
-		subscribeRemoteVideo(params) {
-			console.log(TAG_NAME, 'subscribeRemoteVideo', params); // 设置指定 user streamType 的 muteVideo 为 false
+			/**
+			 * 关闭麦克风
+			 * @returns {Promise}
+			 */
+			unpublishLocalAudio() {
+				// 设置 pusher enableCamera
+				console.log(TAG_NAME, 'unpublshLocalAudio 关闭麦克风');
+				return this.setPusherConfigFun({
+					enableMic: false
+				});
+			},
 
-			const config = {
-				muteVideo: false
-			}; // 本地数据结构里的 streamType 只支持 main 和 aux ，订阅small 也是对main进行处理
+			/**
+			 * 订阅远端视频 主流 小画面 辅流
+			 * @param {Object} params {userID,streamType} streamType 传入 small 时修改对应的主流 url 的 _definitionType 参数为 small, stream.streamType 仍为 main
+			 * @returns {Promise}
+			 */
+			subscribeRemoteVideo(params) {
+				console.log(TAG_NAME, 'subscribeRemoteVideo', params); // 设置指定 user streamType 的 muteVideo 为 false
 
-			const streamType = params.streamType === 'small' ? 'main' : params.streamType;
+				const config = {
+					muteVideo: false
+				}; // 本地数据结构里的 streamType 只支持 main 和 aux ，订阅 small 也是对 main 进行处理
 
-			if (params.streamType === 'small' || params.streamType === 'main') {
+				const streamType = params.streamType === 'small' ? 'main' : params.streamType;
 				const stream = this.userController.getStream({
 					userID: params.userID,
 					streamType: streamType
 				});
+				stream.muteVideoPrev = false; // 用于分页切换时保留player当前的订阅状态
 
-				if (stream && stream.streamType === 'main') {
-					console.log(TAG_NAME, 'subscribeRemoteVideo switch small', stream.src);
+				if (params.streamType === 'small' || params.streamType === 'main') {
+					if (stream && stream.streamType === 'main') {
+						console.log(TAG_NAME, 'subscribeRemoteVideo switch small', stream.src);
 
-					if (params.streamType === 'small') {
-						config.src = stream.src.replace('main', 'small');
-						config._definitionType = 'small'; // 用于设置面板的渲染
-					} else if (params.streamType === 'main') {
-						stream.src = stream.src.replace('small', 'main');
-						config._definitionType = 'main';
+						if (params.streamType === 'small') {
+							config.src = stream.src.replace('main', 'small');
+							config._definitionType = 'small'; // 用于设置面板的渲染
+						} else if (params.streamType === 'main') {
+							stream.src = stream.src.replace('small', 'main');
+							config._definitionType = 'main';
+						}
+
+						console.log(TAG_NAME, 'subscribeRemoteVideo', stream.src);
 					}
-
-					console.log(TAG_NAME, 'subscribeRemoteVideo', stream.src);
 				}
-			}
 
-			return this.setPlayerConfigFun({
-				userID: params.userID,
-				streamType: streamType,
-				config: config
-			});
-		},
+				return this.setPlayerConfigFun({
+					userID: params.userID,
+					streamType: streamType,
+					config: config
+				});
+			},
 
-		/**
-		 * 取消订阅远端视频
-		 * @param {Object} params {userID,streamType}
-		 * @returns {Promise}
-		 */
-		unsubscribeRemoteVideo(params) {
-			console.log(TAG_NAME, 'unsubscribeRemoteVideo', params); // 设置指定 user streamType 的 muteVideo 为 true
+			/**
+			 * 取消订阅远端视频
+			 * @param {Object} params {userID,streamType}
+			 * @returns {Promise}
+			 */
+			unsubscribeRemoteVideo(params) {
+				console.log(TAG_NAME, 'unsubscribeRemoteVideo', params);
+				const stream = this.userController.getStream({
+					userID: params.userID,
+					streamType: params.streamType
+				});
+				stream.muteVideoPrev = true; // 用于分页切换时保留player当前的订阅状态
+				// 设置指定 user streamType 的 muteVideo 为 true
 
-			return this.setPlayerConfigFun({
-				userID: params.userID,
-				streamType: params.streamType,
-				config: {
-					muteVideo: true
+				return this.setPlayerConfigFun({
+					userID: params.userID,
+					streamType: params.streamType,
+					config: {
+						muteVideo: true
+					}
+				});
+			},
+
+			/**
+			 * 订阅远端音频
+			 * @param {Object} params userID 用户ID
+			 * @returns {Promise}
+			 */
+			subscribeRemoteAudio(params) {
+				console.log(TAG_NAME, 'subscribeRemoteAudio', params);
+				return this.setPlayerConfigFun({
+					userID: params.userID,
+					streamType: 'main',
+					config: {
+						muteAudio: false
+					}
+				});
+			},
+
+			/**
+			 * 取消订阅远端音频
+			 * @param {Object} params userID 用户ID
+			 * @returns {Promise}
+			 */
+			unsubscribeRemoteAudio(params) {
+				console.log(TAG_NAME, 'unsubscribeRemoteAudio', params);
+				return this.setPlayerConfigFun({
+					userID: params.userID,
+					streamType: 'main',
+					config: {
+						muteAudio: true
+					}
+				});
+			},
+
+			on(eventCode, handler, context) {
+				this._emitter.on(eventCode, handler, context);
+			},
+
+			off(eventCode, handler) {
+				this._emitter.off(eventCode, handler);
+			},
+
+			getRemoteUserList() {
+				return this.userList;
+			},
+
+			/**
+			 * 切换前后摄像头
+			 */
+			switchCamera() {
+				if (!this.cameraPosition) {
+					// this.data.pusher.cameraPosition 是初始值，不支持动态设置
+					this.cameraPosition = this.pusher.frontCamera;
 				}
-			});
-		},
 
-		/**
-		 * 订阅远端音频
-		 * @param {Object} params userID 用户ID
-		 * @returns {Promise}
-		 */
-		subscribeRemoteAudio(params) {
-			console.log(TAG_NAME, 'subscribeRemoteAudio', params);
-			return this.setPlayerConfigFun({
-				userID: params.userID,
-				streamType: 'main',
-				config: {
-					muteAudio: false
-				}
-			});
-		},
-
-		/**
-		 * 取消订阅远端音频
-		 * @param {Object} params userID 用户ID
-		 * @returns {Promise}
-		 */
-		unsubscribeRemoteAudio(params) {
-			console.log(TAG_NAME, 'unsubscribeRemoteAudio', params);
-			return this.setPlayerConfigFun({
-				userID: params.userID,
-				streamType: 'main',
-				config: {
-					muteAudio: true
-				}
-			});
-		},
-
-		on: function(eventCode, handler, context) {
-			this._emitter.on(eventCode, handler, context);
-		},
-		off: function(eventCode, handler) {
-			this._emitter.off(eventCode, handler);
-		},
-		getRemoteUserList: function() {
-			return this.userList;
-		},
-
-		/**
-		 * 切换前后摄像头
-		 */
-		switchCamera: function() {
-			if (!this.cameraPosition) {
-				// this.data.pusher.cameraPosition 是初始值，不支持动态设置
-				this.cameraPosition = this.pusher.frontCamera;
-			}
-
-			console.log(TAG_NAME, 'switchCamera', this.cameraPosition);
-			this.cameraPosition = this.cameraPosition === 'front' ? 'back' : 'front';
-			this.setData(
-				{
+				console.log(TAG_NAME, 'switchCamera', this.cameraPosition);
+				this.cameraPosition = this.cameraPosition === 'front' ? 'back' : 'front';
+				this.setData({
 					cameraPosition: this.cameraPosition
-				},
-				() => {
+				}, () => {
 					console.log(TAG_NAME, 'switchCamera success', this.cameraPosition);
+				}); // wx 7.0.9 不支持动态设置 pusher.frontCamera ，只支持调用 API switchCamer() 设置，这里修改 cameraPosition 是为了记录状态
+
+				this.pusher.getPusherContext().switchCamera();
+			},
+
+			/**
+			 * 设置指定player view的渲染坐标和尺寸
+			 * @param {object} params
+			 * userID: string
+			 * streamType: string
+			 * xAxis: number
+			 * yAxis: number
+			 * width: number
+			 * height: number
+			 * @returns {Promise}
+			 */
+			setViewRect(params) {
+				console.log(TAG_NAME, 'setViewRect', params);
+
+				if (this.template !== 'custom') {
+					console.warn(`如需使用setViewRect方法，请初始化时设置template:"custom", 当前 template:"${this.template}"`);
 				}
-			); // wx 7.0.9 不支持动态设置 pusher.devicePosition ，需要调用api设置，这里修改cameraPosition是为了记录状态
 
-			this.pusher.getPusherContext().switchCamera();
-		},
+				console.info(`不建议使用该方法动态修改样式，避免引起微信小程序渲染问题，建议直接修改 wxml wxss 进行样式定制化`);
 
-		/**
-		 * 设置指定player view的渲染坐标和尺寸
-		 * @param {object} params
-		 * userID: string
-		 * streamType: string
-		 * xAxis: number
-		 * yAxis: number
-		 * width: number
-		 * height: number
-		 * @returns {Promise}
-		 */
-		setViewRect: function(params) {
-			console.log(TAG_NAME, 'setViewRect', params);
-
-			if (this.pusher.template !== 'custom') {
-				console.warn(`如需使用setViewRect方法，请设置template:"custom", 当前 template:"${this.pusher.template}"`);
-			}
-
-			if (this.pusher.userID === params.userID) {
-				return this.setPusherConfigFun({
-					xAxis: params.xAxis,
-					yAxis: params.yAxis,
-					width: params.width,
-					height: params.height
-				});
-			}
-
-			return this.setPlayerConfigFun({
-				userID: params.userID,
-				streamType: params.streamType,
-				config: {
-					xAxis: params.xAxis,
-					yAxis: params.yAxis,
-					width: params.width,
-					height: params.height
+				if (this.pusher.userID === params.userID) {
+					return this.setPusherConfigFun({
+						xAxis: params.xAxis,
+						yAxis: params.yAxis,
+						width: params.width,
+						height: params.height
+					});
 				}
-			});
-		},
 
-		/**
-		 * 设置指定 player 或者 pusher view 是否可见
-		 * @param {object} params
-		 * userID: string
-		 * streamType: string
-		 * isVisible：boolean
-		 * @returns {Promise}
-		 */
-		setViewVisible: function(params) {
-			console.log(TAG_NAME, 'setViewVisible', params); // if (this.data.pusher.template !== 'custom') {
-			//   console.warn(`如需使用setViewVisible方法，请设置template:"custom", 当前 template:"${this.data.pusher.template}"`)
-			// }
-
-			if (this.pusher.userID === params.userID) {
-				return this.setPusherConfigFun({
-					isVisible: params.isVisible
-				});
-			}
-
-			return this.setPlayerConfigFun({
-				userID: params.userID,
-				streamType: params.streamType,
-				config: {
-					isVisible: params.isVisible
-				}
-			});
-		},
-
-		/**
-		 * 设置指定player view的层级
-		 * @param {Object} params
-		 * userID: string
-		 * streamType: string
-		 * zindex: number
-		 * @returns {Promise}
-		 */
-		setViewZIndex: function(params) {
-			console.log(TAG_NAME, 'setViewZIndex', params);
-
-			if (this.pusher.template !== 'custom') {
-				console.warn(`如需使用setViewZIndex方法，请设置template:"custom", 当前 template:"${this.pusher.template}"`);
-			}
-
-			if (this.pusher.userID === params.userID) {
-				return this.setPusherConfigFun({
-					zindex: params.zindex
-				});
-			}
-
-			return this.setPlayerConfigFun({
-				userID: params.userID,
-				streamType: params.streamType,
-				config: {
-					zindex: params.zindex
-				}
-			});
-		},
-
-		/**
-		 * 播放背景音
-		 * @param {Object} params url
-		 * @returns {Promise}
-		 */
-		playBGM: function(params) {
-			return new Promise((resolve, reject) => {
-				this.pusher.getPusherContext().playBGM({
-					url: params.url,
-					// 已经有相关事件不需要在这里监听,目前用于测试
-					success: () => {
-						console.log(TAG_NAME, '播放背景音成功'); // this._emitter.emit(EVENT.BGM_PLAY_START)
-
-						resolve();
-					},
-					fail: () => {
-						console.log(TAG_NAME, '播放背景音失败');
-
-						this._emitter.emit(EVENT.BGM_PLAY_FAIL);
-
-						reject(new Error('播放背景音失败'));
-					} // complete: () => {
-					//   console.log(TAG_NAME, '背景完成')
-					//   this._emitter.emit(EVENT.BGM_PLAY_COMPLETE)
-					// },
-				});
-			});
-		},
-		stopBGM: function() {
-			this.pusher.getPusherContext().stopBGM();
-		},
-		pauseBGM: function() {
-			this.pusher.getPusherContext().pauseBGM();
-		},
-		resumeBGM: function() {
-			this.pusher.getPusherContext().resumeBGM();
-		},
-
-		/**
-		 * 设置背景音音量
-		 * @param {Object} params volume
-		 */
-		setBGMVolume: function(params) {
-			this.pusher.getPusherContext().setBGMVolume({
-				volume: params.volume
-			});
-		},
-
-		/**
-		 * 设置麦克风音量
-		 * @param {Object} params volume
-		 */
-		setMICVolume: function(params) {
-			this.pusher.getPusherContext().setMICVolume({
-				volume: params.volume
-			});
-		},
-
-		/**
-		 * 发送SEI消息
-		 * @param {Object} params message
-		 * @returns {Promise}
-		 */
-		sendSEI: function(params) {
-			return new Promise((resolve, reject) => {
-				this.pusher.getPusherContext().sendMessage({
-					msg: params.message,
-					success: function(result) {
-						resolve(result);
+				return this.setPlayerConfigFun({
+					userID: params.userID,
+					streamType: params.streamType,
+					config: {
+						xAxis: params.xAxis,
+						yAxis: params.yAxis,
+						width: params.width,
+						height: params.height
 					}
 				});
-			});
-		},
+			},
 
-		/**
-		 * pusher 和 player 的截图并保存
-		 * @param {Object} params userID streamType
-		 * @returns {Promise}
-		 */
-		snapshot: function(params) {
-			console.log(TAG_NAME, 'snapshot', params);
-			return new Promise((resolve, reject) => {
-				this.captureSnapshot(params)
-					.then(result => {
-						wx.saveImageToPhotosAlbum({
+			/**
+			 * 设置指定 player 或者 pusher view 是否可见
+			 * @param {object} params
+			 * userID: string
+			 * streamType: string
+			 * isVisible：boolean
+			 * @returns {Promise}
+			 */
+			setViewVisible(params) {
+				console.log(TAG_NAME, 'setViewVisible', params);
+
+				if (this.template !== 'custom') {
+					console.warn(`如需使用setViewVisible方法，请初始化时设置template:"custom", 当前 template:"${this.template}"`);
+				}
+
+				console.info(`不建议使用该方法动态修改样式，避免引起微信小程序渲染问题，建议直接修改 wxml wxss 进行样式定制化`);
+
+				if (this.pusher.userID === params.userID) {
+					return this.setPusherConfigFun({
+						isVisible: params.isVisible
+					});
+				}
+
+				return this.setPlayerConfigFun({
+					userID: params.userID,
+					streamType: params.streamType,
+					config: {
+						isVisible: params.isVisible
+					}
+				});
+			},
+
+			/**
+			 * 设置指定player view的层级
+			 * @param {Object} params
+			 * userID: string
+			 * streamType: string
+			 * zIndex: number
+			 * @returns {Promise}
+			 */
+			setViewZIndex(params) {
+				console.log(TAG_NAME, 'setViewZIndex', params);
+
+				if (this.template !== 'custom') {
+					console.warn(`如需使用setViewZIndex方法，请初始化时设置template:"custom", 当前 template:"${this.template}"`);
+				}
+
+				console.info(`不建议使用该方法动态修改样式，避免引起微信小程序渲染问题，建议直接修改 wxml wxss 进行样式定制化`);
+
+				if (this.pusher.userID === params.userID) {
+					return this.setPusherConfigFun({
+						zIndex: params.zindex || params.zIndex
+					});
+				}
+
+				return this.setPlayerConfigFun({
+					userID: params.userID,
+					streamType: params.streamType,
+					config: {
+						zIndex: params.zindex || params.zIndex
+					}
+				});
+			},
+
+			/**
+			 * 播放背景音
+			 * @param {Object} params url
+			 * @returns {Promise}
+			 */
+			playBGM(params) {
+				return new Promise((resolve, reject) => {
+					this.pusher.getPusherContext().playBGM({
+						url: params.url,
+						// 已经有相关事件不需要在这里监听,目前用于测试
+						success: () => {
+							console.log(TAG_NAME,
+							'播放背景音成功'); // this._emitter.emit(EVENT.BGM_PLAY_START)
+
+							resolve();
+						},
+						fail: () => {
+							console.log(TAG_NAME, '播放背景音失败');
+
+							this._emitter.emit(EVENT.BGM_PLAY_FAIL);
+
+							reject(new Error('播放背景音失败'));
+						} // complete: () => {
+						//   console.log(TAG_NAME, '背景完成')
+						//   this._emitter.emit(EVENT.BGM_PLAY_COMPLETE)
+						// },
+
+					});
+				});
+			},
+
+			stopBGM() {
+				this.pusher.getPusherContext().stopBGM();
+			},
+
+			pauseBGM() {
+				this.pusher.getPusherContext().pauseBGM();
+			},
+
+			resumeBGM() {
+				this.pusher.getPusherContext().resumeBGM();
+			},
+
+			/**
+			 * 设置背景音音量
+			 * @param {Object} params volume
+			 */
+			setBGMVolume(params) {
+				console.log(TAG_NAME, 'setBGMVolume', params);
+				this.pusher.getPusherContext().setBGMVolume({
+					volume: params.volume
+				});
+			},
+
+			/**
+			 * 设置麦克风音量
+			 * @param {Object} params volume
+			 */
+			setMICVolume(params) {
+				console.log(TAG_NAME, 'setMICVolume', params);
+				this.pusher.getPusherContext().setMICVolume({
+					volume: params.volume
+				});
+			},
+
+			/**
+			 * 发送SEI消息
+			 * @param {Object} params message
+			 * @returns {Promise}
+			 */
+			sendSEI(params) {
+				return new Promise((resolve, reject) => {
+					this.pusher.getPusherContext().sendMessage({
+						msg: params.message,
+						success: function(result) {
+							resolve(result);
+						}
+					});
+				});
+			},
+
+			/**
+			 * pusher 和 player 的截图并保存
+			 * @param {Object} params userID streamType
+			 * @returns {Promise}
+			 */
+			snapshot(params) {
+				console.log(TAG_NAME, 'snapshot', params);
+				return new Promise((resolve, reject) => {
+					this.captureSnapshot(params).then(result => {
+						uni.saveImageToPhotosAlbum({
 							filePath: result.tempImagePath,
 
 							success(res) {
-								wx.showToast({
+								uni.showToast({
 									title: '已保存到相册'
 								});
 								console.log('save photo is success', res);
@@ -1041,7 +1333,7 @@ export default {
 							},
 
 							fail: function(error) {
-								wx.showToast({
+								uni.showToast({
 									icon: 'none',
 									title: '保存失败'
 								});
@@ -1049,437 +1341,1984 @@ export default {
 								reject(error);
 							}
 						});
-					})
-					.catch(error => {
+					}).catch(error => {
 						reject(error);
 					});
-			});
-		},
+				});
+			},
 
-		/**
-		 * 获取pusher 和 player 的截图
-		 * @param {Object} params userID streamType
-		 * @returns {Promise}
-		 */
-		captureSnapshot: function(params) {
-			return new Promise((resolve, reject) => {
-				if (params.userID === this.pusher.userID) {
-					// pusher
-					this.pusher.getPusherContext().snapshot({
-						quality: 'raw',
-						complete: result => {
-							console.log(TAG_NAME, 'snapshot pusher', result);
+			/**
+			 * 获取pusher 和 player 的截图
+			 * @param {Object} params userID streamType
+			 * @returns {Promise}
+			 */
+			captureSnapshot(params) {
+				return new Promise((resolve, reject) => {
+					if (params.userID === this.pusher.userID) {
+						// pusher
+						this.pusher.getPusherContext().snapshot({
+							quality: 'raw',
+							complete: result => {
+								console.log(TAG_NAME, 'snapshot pusher', result);
 
-							if (result.tempImagePath) {
-								resolve(result);
-							} else {
-								console.log('snapShot 回调失败', result);
-								reject(new Error('截图失败'));
+								if (result.tempImagePath) {
+									resolve(result);
+								} else {
+									console.log('snapShot 回调失败', result);
+									reject(new Error('截图失败'));
+								}
 							}
+						});
+					} else {
+						// player
+						this.userController.getStream(params).playerContext.snapshot({
+							quality: 'raw',
+							complete: result => {
+								console.log(TAG_NAME, 'snapshot player', result);
+
+								if (result.tempImagePath) {
+									resolve(result);
+								} else {
+									console.log('snapShot 回调失败', result);
+									reject(new Error('截图失败'));
+								}
+							}
+						});
+					}
+				});
+			},
+
+			/**
+			 * 将远端视频全屏
+			 * @param {Object} params userID streamType direction
+			 * @returns {Promise}
+			 */
+			enterFullscreen(params) {
+				console.log(TAG_NAME, 'enterFullscreen', params);
+				return new Promise((resolve, reject) => {
+					this.userController.getStream(params).playerContext.requestFullScreen({
+						direction: params.direction || 0,
+						success: event => {
+							console.log(TAG_NAME, 'enterFullscreen success', event);
+							resolve(event);
+						},
+						fail: event => {
+							console.log(TAG_NAME, 'enterFullscreen fail', event);
+							reject(event);
 						}
+					});
+				});
+			},
+
+			/**
+			 * 将远端视频取消全屏
+			 * @param {Object} params userID streamType
+			 * @returns {Promise}
+			 */
+			exitFullscreen(params) {
+				console.log(TAG_NAME, 'exitFullscreen', params);
+				return new Promise((resolve, reject) => {
+					this.userController.getStream(params).playerContext.exitFullScreen({
+						success: event => {
+							console.log(TAG_NAME, 'exitFullScreen success', event);
+							resolve(event);
+						},
+						fail: event => {
+							console.log(TAG_NAME, 'exitFullScreen fail', event);
+							reject(event);
+						}
+					});
+				});
+			},
+
+			/**
+			 * 设置 player 视图的横竖屏显示
+			 * @param {Object} params userID streamType orientation: vertical, horizontal
+			 * @returns {Promise}
+			 */
+			setRemoteOrientation(params) {
+				return this.setPlayerConfigFun({
+					userID: params.userID,
+					streamType: params.streamType,
+					config: {
+						orientation: params.orientation
+					}
+				});
+			},
+
+			// 改为：
+			setViewOrientation(params) {
+				return this.setPlayerConfigFun({
+					userID: params.userID,
+					streamType: params.streamType,
+					config: {
+						orientation: params.orientation
+					}
+				});
+			},
+
+			/**
+			 * 设置 player 视图的填充模式
+			 * @param {Object} params userID streamType fillMode: contain，fillCrop
+			 * @returns {Promise}
+			 */
+			setRemoteFillMode(params) {
+				return this.setPlayerConfigFun({
+					userID: params.userID,
+					streamType: params.streamType,
+					config: {
+						objectFit: params.fillMode
+					}
+				});
+			},
+
+			// 改为：
+			setViewFillMode(params) {
+				return this.setPlayerConfigFun({
+					userID: params.userID,
+					streamType: params.streamType,
+					config: {
+						objectFit: params.fillMode
+					}
+				});
+			},
+
+			/**
+			 * 发送C2C文本消息
+			 * @param {*} params userID,message
+			 * @returns {Promise}
+			 */
+			sendC2CTextMessage(params) {
+				if (!this.tim) {
+					console.warn(TAG_NAME, '未开启IM功能，该方法无法使用', params);
+					return;
+				}
+
+				console.log(TAG_NAME, 'sendC2CTextMessage', params);
+				const message = this.tim.createTextMessage({
+					to: params.userID + '',
+					conversationType: TIM.TYPES.CONV_C2C,
+					payload: {
+						text: params.message
+					}
+				});
+				const promise = this.tim.sendMessage(message);
+				promise.then(function(imResponse) {
+					// 发送成功
+					console.log(TAG_NAME, 'sendC2CTextMessage success', imResponse);
+				}).catch(function(imError) {
+					// 发送失败
+					console.warn(TAG_NAME, 'sendC2CTextMessage error:', imError);
+				});
+				return promise;
+			},
+
+			/**
+			 * 发送C2C自定义消息
+			 * @param {*} params: userID payload
+			 * @returns {Promise}
+			 *
+			 */
+			sendC2CCustomMessage(params) {
+				if (!this.tim) {
+					console.warn(TAG_NAME, '未开启IM功能，该方法无法使用', params);
+					return;
+				}
+
+				console.log(TAG_NAME, 'sendC2CCustomMessage', params);
+				const message = this.tim.createCustomMessage({
+					to: params.userID + '',
+					conversationType: TIM.TYPES.CONV_C2C,
+					payload: params.payload
+				});
+				const promise = this.tim.sendMessage(message);
+				promise.then(function(imResponse) {
+					// 发送成功
+					console.log(TAG_NAME, 'sendMessage success', imResponse);
+				}).catch(function(imError) {
+					// 发送失败
+					console.warn(TAG_NAME, 'sendMessage error:', imError);
+				});
+				return promise;
+			},
+
+			/**
+			 * 发送群组文本消息
+			 * @param {*} params roomID message
+			 * @returns {Promise}
+			 *
+			 */
+			sendGroupTextMessage(params) {
+				if (!this.tim) {
+					console.warn(TAG_NAME, '未开启IM功能，该方法无法使用', params);
+					return;
+				}
+
+				console.log(TAG_NAME, 'sendGroupTextMessage', params);
+				const message = this.tim.createTextMessage({
+					to: params.roomID + '',
+					conversationType: TIM.TYPES.CONV_GROUP,
+					payload: {
+						text: params.message
+					}
+				});
+				const promise = this.tim.sendMessage(message);
+				promise.then(function(imResponse) {
+					// 发送成功
+					console.log(TAG_NAME, 'sendGroupTextMessage success', imResponse);
+				}).catch(function(imError) {
+					// 发送失败
+					console.warn(TAG_NAME, 'sendGroupTextMessage error:', imError);
+				});
+				return promise;
+			},
+
+			/**
+			 * 发送群组自定义消息
+			 * @param {*} params roomID payload
+			 * @returns {Promise}
+			 *
+			 */
+			sendGroupCustomMessage(params) {
+				if (!this.tim) {
+					console.warn(TAG_NAME, '未开启IM功能，该方法无法使用', params);
+					return;
+				}
+
+				console.log(TAG_NAME, 'sendGroupCustomMessage', params);
+				const message = this.tim.createCustomMessage({
+					to: params.roomID + '',
+					conversationType: TIM.TYPES.CONV_GROUP,
+					payload: params.payload
+				});
+				const promise = this.tim.sendMessage(message);
+				promise.then(function(imResponse) {
+					// 发送成功
+					console.log(TAG_NAME, 'sendMessage success', imResponse);
+				}).catch(function(imError) {
+					// 发送失败
+					console.warn(TAG_NAME, 'sendMessage error:', imError);
+				});
+				return promise;
+			},
+
+			// ______             __                                              __
+			// |      \           |  \                                            |  \
+			//  \$$$$$$ _______  _| $$_     ______    ______   _______    ______  | $$
+			//   | $$  |       \|   $$ \   /      \  /      \ |       \  |      \ | $$
+			//   | $$  | $$$$$$$\\$$$$$$  |  $$$$$$\|  $$$$$$\| $$$$$$$\  \$$$$$$\| $$
+			//   | $$  | $$  | $$ | $$ __ | $$    $$| $$   \$$| $$  | $$ /      $$| $$
+			//  _| $$_ | $$  | $$ | $$|  \| $$$$$$$$| $$      | $$  | $$|  $$$$$$$| $$
+			// |   $$ \| $$  | $$  \$$  $$ \$$     \| $$      | $$  | $$ \$$    $$| $$
+			//  \$$$$$$ \$$   \$$   \$$$$   \$$$$$$$ \$$       \$$   \$$  \$$$$$$$ \$$
+
+			/**
+			 * 设置推流参数并触发页面渲染更新
+			 * @param {Object} config live-pusher 的配置
+			 * @returns {Promise}
+			 */
+			setPusherConfigFun(config, skipLog = false) {
+				if (!skipLog) {
+					console.log(TAG_NAME, '_setPusherConfig', config, this.pusher);
+				}
+
+				return new Promise((resolve, reject) => {
+					if (!this.pusher) {
+						this.pusher = new Pusher(config);
+					} else {
+						Object.assign(this.pusher, config);
+					}
+
+					this.setData({
+						pusher: this.pusher
+					}, () => {
+						if (!skipLog) {
+							console.log(TAG_NAME, '_setPusherConfig setData compelete', 'config:', config,
+								'pusher:', this.pusher);
+						}
+
+						resolve(config);
+					});
+				});
+			},
+
+			/**
+			 * 设置指定 player 属性并触发页面渲染
+			 * @param {Object} params include userID,streamType,config
+			 * @returns {Promise}
+			 */
+			setPlayerConfigFun(params) {
+				const userID = params.userID;
+				const streamType = params.streamType;
+				const config = params.config;
+				console.log(TAG_NAME, '_setPlayerConfig', params);
+				return new Promise((resolve, reject) => {
+					// 获取指定的userID streamType 的 stream
+					const user = this.userController.getUser(userID);
+
+					if (user && user.streams[streamType]) {
+						Object.assign(user.streams[streamType], config); // user.streams引用的对象和 streamList 里的是同一个
+
+						this.setData({
+							streamList: this.streamList,
+							visibleStreamList: this.filterVisibleStreamFun(this.streamList, true)
+						}, () => {
+							// console.log(TAG_NAME, '_setPlayerConfig complete', params, 'streamList:', this.data.streamList)
+							resolve(params);
+						});
+					} else {
+						// 不需要reject，静默处理
+						console.warn(TAG_NAME,
+						'指定 userID 或者 streamType 不存在'); // reject(new Error('指定 userID 或者 streamType 不存在'))
+					}
+				});
+			},
+
+			/**
+			 * 设置列表数据，并触发页面渲染
+			 * @param {Object} params include userList, stramList
+			 * @returns {Promise}
+			 */
+			setListFun(params) {
+				console.log(TAG_NAME, '_setList', params, this.template);
+				const {
+					userList,
+					streamList
+				} = params;
+				return new Promise((resolve, reject) => {
+					let visibleStreamList = [];
+					const data = {
+						userList: userList || this.userList,
+						streamList: streamList || this.streamList
+					};
+
+					if (this.template === 'grid') {
+						visibleStreamList = this.filterVisibleStreamFun(streamList);
+						data.visibleStreamList = visibleStreamList || this.visibleStreamList;
+						data.gridPagePlaceholderStreamList = this.gridPagePlaceholderStreamList;
+						data.gridCurrentPage = this.gridCurrentPage;
+						data.gridPageCount = this.gridPageCount;
+					}
+
+					this.setData(data, () => {
+						resolve(params);
+					});
+				});
+			},
+
+			/**
+			 * 必选参数检测
+			 * @param {Object} rtcConfig rtc参数
+			 * @returns {Boolean}
+			 */
+			checkParamFun(rtcConfig) {
+				console.log(TAG_NAME, 'checkParam config:', rtcConfig);
+
+				if (!rtcConfig.sdkAppID) {
+					console.error('未设置 sdkAppID');
+					return false;
+				}
+
+				if (rtcConfig.roomID === undefined) {
+					console.error('未设置 roomID');
+					return false;
+				}
+
+				if (rtcConfig.roomID < 1 || rtcConfig.roomID > 4294967296) {
+					console.error('roomID 超出取值范围 1 ~ 4294967295');
+					return false;
+				}
+
+				if (!rtcConfig.userID) {
+					console.error('未设置 userID');
+					return false;
+				}
+
+				if (!rtcConfig.userSig) {
+					console.error('未设置 userSig');
+					return false;
+				}
+
+				if (!rtcConfig.template) {
+					console.error('未设置 template');
+					return false;
+				}
+
+				return true;
+			},
+
+			getPushUrlFun(rtcConfig) {
+				// 拼接 puhser url rtmp 方案
+				console.log(TAG_NAME, '_getPushUrl', rtcConfig);
+
+				if (ENV.IS_TRTC) {
+					// 版本高于7.0.8，基础库版本高于2.10.0 使用新的 url
+					return new Promise((resolve, reject) => {
+						// appscene videocall live
+						// cloudenv PRO CCC DEV UAT
+						// encsmall 0
+						// 对外的默认值是rtc ，对内的默认值是videocall
+						rtcConfig.scene = !rtcConfig.scene || rtcConfig.scene === 'rtc' ? 'videocall' : rtcConfig
+							.scene;
+						rtcConfig.enableBlackStream = rtcConfig.enableBlackStream ||
+						''; // 是否支持在纯音频下推送SEI消息，注意：在关闭enable-recv-message后还是无法接收
+
+						rtcConfig.encsmall = rtcConfig.encsmall || 0; // 是否编小画面，这个特性不建议学生默认开启，只有老师端才比较有意义
+
+						rtcConfig.cloudenv = rtcConfig.cloudenv || 'PRO';
+						rtcConfig.streamID = rtcConfig.streamID || ''; // 指定旁边路直播的流ID
+
+						rtcConfig.userDefineRecordID = rtcConfig.userDefineRecordID || ''; // 指定录制文件的recordid
+
+						rtcConfig.privateMapKey = rtcConfig.privateMapKey || ''; // 字符串房间号
+
+						rtcConfig.pureAudioMode = rtcConfig.pureAudioMode ||
+						''; // 指定是否纯音频推流及录制，默认不填，值为1 或 2，其他值非法不处理
+
+						rtcConfig.recvMode = rtcConfig.recvMode ||
+						1; // 1. 自动接收音视频 2. 仅自动接收音频 3. 仅自动接收视频 4. 音视频都不自动接收, 不能绑定player
+
+						let roomID = '';
+
+						if (/^\d+$/.test(rtcConfig.roomID)) {
+							// 数字房间号
+							roomID = '&roomid=' + rtcConfig.roomID;
+						} else {
+							// 字符串房间号
+							roomID = '&strroomid=' + rtcConfig.roomID;
+						}
+
+						setTimeout(() => {
+							const pushUrl = 'room://cloud.tencent.com/rtc?sdkappid=' + rtcConfig.sdkAppID +
+								roomID + '&userid=' + rtcConfig.userID + '&usersig=' + rtcConfig.userSig +
+								'&appscene=' + rtcConfig.scene + '&encsmall=' + rtcConfig.encsmall +
+								'&cloudenv=' + rtcConfig.cloudenv + '&enableBlackStream=' + rtcConfig
+								.enableBlackStream + '&streamid=' + rtcConfig.streamID +
+								'&userdefinerecordid=' + rtcConfig.userDefineRecordID + '&privatemapkey=' +
+								rtcConfig.privateMapKey + '&pureaudiomode=' + rtcConfig.pureAudioMode +
+								'&recvmode=' + rtcConfig.recvMode;
+							console.warn(TAG_NAME, 'getPushUrl result:', pushUrl);
+							resolve(pushUrl);
+						}, 0);
+					});
+				}
+
+				console.error(TAG_NAME, '组件仅支持微信 App iOS >=7.0.9, Android >= 7.0.8, 小程序基础库版 >= 2.10.0');
+				console.error(TAG_NAME, '需要真机运行，开发工具不支持实时音视频');
+			},
+
+			/**
+			 * 获取签名和推流地址
+			 * @param {Object} rtcConfig 进房参数配置
+			 * @returns {Promise}
+			 */
+			requestSigServerFun(rtcConfig) {
+				console.log(TAG_NAME, '_requestSigServer:', rtcConfig);
+				const sdkAppID = rtcConfig.sdkAppID;
+				const userID = rtcConfig.userID;
+				const userSig = rtcConfig.userSig;
+				const roomID = rtcConfig.roomID;
+				const privateMapKey = rtcConfig.privateMapKey;
+				rtcConfig.useCloud = rtcConfig.useCloud === undefined ? true : rtcConfig.useCloud;
+				let url = rtcConfig.useCloud ? 'https://official.opensso.tencent-cloud.com/v4/openim/jsonvideoapp' :
+					'https://yun.tim.qq.com/v4/openim/jsonvideoapp';
+				url += '?sdkappid=' + sdkAppID + '&identifier=' + userID + '&usersig=' + userSig + '&random=' + Date
+				.now() + '&contenttype=json';
+				const reqHead = {
+					'Cmd': 1,
+					'SeqNo': 1,
+					'BusType': 7,
+					'GroupId': roomID
+				};
+				const reqBody = {
+					'PrivMapEncrypt': privateMapKey,
+					'TerminalType': 1,
+					'FromType': 3,
+					'SdkVersion': 26280566
+				};
+				console.log(TAG_NAME, '_requestSigServer:', url, reqHead, reqBody);
+				return new Promise((resolve, reject) => {
+					uni.request({
+						url: url,
+						data: {
+							'ReqHead': reqHead,
+							'ReqBody': reqBody
+						},
+						method: 'POST',
+						success: res => {
+							console.log('_requestSigServer success:', res);
+
+							if (res.data['ErrorCode'] || res.data['RspHead']['ErrorCode'] !== 0) {
+								// console.error(res.data['ErrorInfo'] || res.data['RspHead']['ErrorInfo'])
+								console.error('获取roomsig失败');
+								reject(res);
+							}
+
+							const roomSig = JSON.stringify(res.data['RspBody']);
+							let pushUrl = 'room://cloud.tencent.com?sdkappid=' + sdkAppID +
+								'&roomid=' + roomID + '&userid=' + userID + '&roomsig=' +
+								encodeURIComponent(roomSig); // TODO 需要重新整理的逻辑 TRTC尚未支持 20200213
+							// 如果有配置纯音频推流或者recordId参数
+
+							if (rtcConfig.pureAudioPushMod || rtcConfig.recordId) {
+								const bizbuf = {
+									Str_uc_params: {
+										pure_audio_push_mod: 0,
+										record_id: 0
+									}
+								}; // 纯音频推流
+
+								if (rtcConfig.pureAudioPushMod) {
+									bizbuf.Str_uc_params.pure_audio_push_mod = rtcConfig
+										.pureAudioPushMod;
+								} else {
+									delete bizbuf.Str_uc_params.pure_audio_push_mod;
+								} // 自动录制时业务自定义id
+
+
+								if (rtcConfig.recordId) {
+									bizbuf.Str_uc_params.record_id = rtcConfig.recordId;
+								} else {
+									delete bizbuf.Str_uc_params.record_id;
+								}
+
+								pushUrl += '&bizbuf=' + encodeURIComponent(JSON.stringify(bizbuf));
+							}
+
+							console.log('roomSigInfo', pushUrl);
+							resolve(pushUrl);
+						},
+						fail: res => {
+							console.log(TAG_NAME, 'requestSigServer fail:', res);
+							reject(res);
+						}
+					});
+				});
+			},
+
+			doubleTabToggleFullscreenFun(event) {
+				const curTime = event.timeStamp;
+				const lastTime = this._lastTapTime;
+				const lastTapCoordinate = this._lastTapCoordinate;
+				const currentTapCoordinate = event.detail; // 计算两次点击的距离
+
+				const distence = Math.sqrt(Math.pow(Math.abs(currentTapCoordinate.x - lastTapCoordinate.x), 2) + Math.pow(
+					Math.abs(currentTapCoordinate.y - lastTapCoordinate.y), 2));
+				this._lastTapCoordinate = currentTapCoordinate; // 已知问题：上次全屏操作后，必须等待1.5s后才能再次进行全屏操作，否则引发SDK全屏异常，因此增加节流逻辑
+
+				const beforeLastTime = this._beforeLastTapTime;
+				console.log(TAG_NAME, 'doubleTabToggleFullscreenFun', event, lastTime, beforeLastTime, distence);
+
+				if (curTime - lastTime > 0 && curTime - lastTime < 300 && lastTime - beforeLastTime > 1500 && distence <
+					20) {
+					const userID = event.currentTarget.dataset.userid;
+					const streamType = event.currentTarget.dataset.streamtype;
+
+					if (this._isFullscreen) {
+						this.exitFullscreen({
+							userID,
+							streamType
+						}).then(() => {
+							this._isFullscreen = false;
+						}).catch(() => {});
+					} else {
+						// const stream = this.userController.getStream({ userID, streamType })
+						let direction; // // 已知问题：视频的尺寸需要等待player触发NetStatus事件才能获取到，如果进房就双击全屏，全屏后的方向有可能不对。
+						// if (stream && stream.videoWidth && stream.videoHeight) {
+						//   // 如果是横视频，全屏时进行横屏处理。如果是竖视频，则为0
+						//   direction = stream.videoWidth > stream.videoHeight ? 90 : 0
+						// }
+
+						this.enterFullscreen({
+							userID,
+							streamType,
+							direction
+						}).then(() => {
+							this._isFullscreen = true;
+						}).catch(() => {});
+					}
+
+					this._beforeLastTapTime = lastTime;
+				}
+
+				this._lastTapTime = curTime;
+			},
+
+			/**
+			 * TRTC-room 远端用户和音视频状态处理
+			 */
+			bindEventFun() {
+				// 远端用户进房
+				this.userController.on(EVENT.REMOTE_USER_JOIN, event => {
+					console.log(TAG_NAME, '远端用户进房', event, event.data.userID);
+					this.setData({
+						userList: event.data.userList
+					}, () => {
+						this._emitter.emit(EVENT.REMOTE_USER_JOIN, {
+							userID: event.data.userID
+						});
+					});
+					console.log(TAG_NAME, 'REMOTE_USER_JOIN', 'streamList:', this.streamList, 'userList:', this
+						.userList);
+				}); // 远端用户离开
+
+				this.userController.on(EVENT.REMOTE_USER_LEAVE, event => {
+					console.log(TAG_NAME, '远端用户离开', event, event.data.userID);
+
+					if (event.data.userID) {
+						this.setListFun({
+							userList: event.data.userList,
+							streamList: event.data.streamList
+						}).then(() => {
+							this._emitter.emit(EVENT.REMOTE_USER_LEAVE, {
+								userID: event.data.userID
+							});
+						});
+					}
+
+					console.log(TAG_NAME, 'REMOTE_USER_LEAVE', 'streamList:', this.streamList, 'userList:', this
+						.userList);
+				}); // 视频状态 true
+
+				this.userController.on(EVENT.REMOTE_VIDEO_ADD, event => {
+					console.log(TAG_NAME, '远端视频可用', event, event.data.stream.userID);
+					const stream = event.data.stream; // 如果Android onHide 时，新增的player 无法播放 记录标识位
+
+					if (this.status.pageLife === 'hide') {
+						this.status.isOnHideAddStream = true;
+						stream.isOnHideAdd = true;
+					}
+
+					this.setListFun({
+						userList: event.data.userList,
+						streamList: event.data.streamList
+					}).then(() => {
+						// 完善 的stream 的 playerContext
+						stream.playerContext = uni.createLivePlayerContext(stream.streamID,
+						this); // 新增的需要触发一次play 默认属性才能生效
+						// stream.playerContext.play()
+						// console.log(TAG_NAME, 'REMOTE_VIDEO_ADD playerContext.play()', stream)
+
+						this._emitter.emit(EVENT.REMOTE_VIDEO_ADD, {
+							userID: stream.userID,
+							streamType: stream.streamType
+						});
+					});
+					console.log(TAG_NAME, 'REMOTE_VIDEO_ADD', 'streamList:', this.streamList, 'userList:', this
+						.userList);
+				}); // 视频状态 false
+
+				this.userController.on(EVENT.REMOTE_VIDEO_REMOVE, event => {
+					console.log(TAG_NAME, '远端视频移除', event, event.data.stream.userID);
+					const stream = event.data.stream;
+					this.setListFun({
+						userList: event.data.userList,
+						streamList: event.data.streamList
+					}).then(() => {
+						// 有可能先触发了退房事件，用户名下的所有stream都已清除
+						if (stream.userID && stream.streamType) {
+							this._emitter.emit(EVENT.REMOTE_VIDEO_REMOVE, {
+								userID: stream.userID,
+								streamType: stream.streamType
+							});
+						}
+					});
+					console.log(TAG_NAME, 'REMOTE_VIDEO_REMOVE', 'streamList:', this.streamList, 'userList:', this
+						.userList);
+				}); // 音频可用
+
+				this.userController.on(EVENT.REMOTE_AUDIO_ADD, event => {
+					console.log(TAG_NAME, '远端音频可用', event);
+					const stream = event.data.stream;
+					this.setListFun({
+						userList: event.data.userList,
+						streamList: event.data.streamList
+					}).then(() => {
+						stream.playerContext = uni.createLivePlayerContext(stream.streamID,
+						this); // 新增的需要触发一次play 默认属性才能生效
+						// stream.playerContext.play()
+						// console.log(TAG_NAME, 'REMOTE_AUDIO_ADD playerContext.play()', stream)
+
+						this._emitter.emit(EVENT.REMOTE_AUDIO_ADD, {
+							userID: stream.userID,
+							streamType: stream.streamType
+						});
+					});
+					console.log(TAG_NAME, 'REMOTE_AUDIO_ADD', 'streamList:', this.streamList, 'userList:', this
+						.userList);
+				}); // 音频不可用
+
+				this.userController.on(EVENT.REMOTE_AUDIO_REMOVE, event => {
+					console.log(TAG_NAME, '远端音频移除', event, event.data.stream.userID);
+					const stream = event.data.stream;
+					this.setListFun({
+						userList: event.data.userList,
+						streamList: event.data.streamList
+					}).then(() => {
+						// 有可能先触发了退房事件，用户名下的所有stream都已清除
+						if (stream.userID && stream.streamType) {
+							this._emitter.emit(EVENT.REMOTE_AUDIO_REMOVE, {
+								userID: stream.userID,
+								streamType: stream.streamType
+							});
+						}
+					});
+					console.log(TAG_NAME, 'REMOTE_AUDIO_REMOVE', 'streamList:', this.streamList, 'userList:', this
+						.userList);
+				});
+			},
+
+			/**
+			 * pusher event handler
+			 * @param {*} event 事件实例
+			 */
+			pusherStateChangeHandlerFun(event) {
+				const code = event.detail.code;
+				const message = event.detail.message;
+				console.log(TAG_NAME, 'pusherStateChange：', code, event);
+
+				switch (code) {
+					case 0:
+						// 未知状态码，不做处理
+						console.log(TAG_NAME, message, code);
+						break;
+
+					case 1001:
+						console.log(TAG_NAME, '已经连接推流服务器', code);
+						break;
+
+					case 1002:
+						console.log(TAG_NAME, '已经与服务器握手完毕,开始推流', code);
+						break;
+
+					case 1003:
+						console.log(TAG_NAME, '打开摄像头成功', code);
+						break;
+
+					case 1004:
+						console.log(TAG_NAME, '录屏启动成功', code);
+						break;
+
+					case 1005:
+						console.log(TAG_NAME, '推流动态调整分辨率', code);
+						break;
+
+					case 1006:
+						console.log(TAG_NAME, '推流动态调整码率', code);
+						break;
+
+					case 1007:
+						console.log(TAG_NAME, '首帧画面采集完成', code);
+						break;
+
+					case 1008:
+						console.log(TAG_NAME, '编码器启动', code);
+						break;
+
+					case 1018:
+						console.log(TAG_NAME, '进房成功', code);
+
+						this._emitter.emit(EVENT.LOCAL_JOIN, {
+							userID: this.pusher.userID
+						});
+
+						break;
+
+					case 1019:
+						console.log(TAG_NAME, '退出房间',
+						code); // 20200421 iOS 仍然没有1019事件通知退房，退房事件移动到 exitRoom 方法里，但不是后端通知的退房成功
+						// this._emitter.emit(EVENT.LOCAL_LEAVE, { userID: this.data.pusher.userID })
+
+						break;
+
+					case 2003:
+						console.log(TAG_NAME, '渲染首帧视频', code);
+						break;
+
+					case 1020:
+					case 1031:
+					case 1032:
+					case 1033:
+					case 1034:
+						// 通过 userController 处理 1020 1031 1032 1033 1034
+						this.userController.userEventHandler(event);
+						break;
+
+					case -1301:
+						console.error(TAG_NAME, '打开摄像头失败: ', code);
+
+						this._emitter.emit(EVENT.ERROR, {
+							code,
+							message
+						});
+
+						break;
+
+					case -1302:
+						console.error(TAG_NAME, '打开麦克风失败: ', code);
+
+						this._emitter.emit(EVENT.ERROR, {
+							code,
+							message
+						});
+
+						break;
+
+					case -1303:
+						console.error(TAG_NAME, '视频编码失败: ', code);
+
+						this._emitter.emit(EVENT.ERROR, {
+							code,
+							message
+						});
+
+						break;
+
+					case -1304:
+						console.error(TAG_NAME, '音频编码失败: ', code);
+
+						this._emitter.emit(EVENT.ERROR, {
+							code,
+							message
+						});
+
+						break;
+
+					case -1307:
+						console.error(TAG_NAME, '推流连接断开: ', code);
+
+						this._emitter.emit(EVENT.ERROR, {
+							code,
+							message
+						});
+
+						break;
+
+					case -100018:
+						console.error(TAG_NAME, '进房失败: userSig 校验失败，请检查 userSig 是否填写正确', code, message);
+
+						this._emitter.emit(EVENT.ERROR, {
+							code,
+							message
+						});
+
+						break;
+
+					case 5000:
+						console.log(TAG_NAME, '小程序被挂起: ', code); // 20200421 iOS 微信点击胶囊圆点会触发该事件
+						// 触发 5000 后，底层SDK会退房，返回前台后会自动进房
+
+						break;
+
+					case 5001:
+						// 20200421 仅有 Android 微信会触发该事件
+						console.log(TAG_NAME, '小程序悬浮窗被关闭: ', code);
+						this.status.isPending = true;
+
+						if (this.status.isPush) {
+							this.exitRoom();
+						}
+
+						break;
+
+					case 1021:
+						console.log(TAG_NAME, '网络类型发生变化，需要重新进房', code);
+						break;
+
+					case 2007:
+						console.log(TAG_NAME, '本地视频播放loading: ', code);
+						break;
+
+					case 2004:
+						console.log(TAG_NAME, '本地视频播放开始: ', code);
+						break;
+
+					default:
+						console.log(TAG_NAME, message, code);
+				}
+			},
+
+			pusherNetStatusHandlerFun(event) {
+				// 触发 LOCAL_NET_STATE_UPDATE
+				this._emitter.emit(EVENT.LOCAL_NET_STATE_UPDATE, event);
+			},
+
+			pusherErrorHandlerFun(event) {
+				// 触发 ERROR
+				console.warn(TAG_NAME, 'pusher error', event);
+
+				try {
+					const code = event.detail.errCode;
+					const message = event.detail.errMsg;
+
+					this._emitter.emit(EVENT.ERROR, {
+						code,
+						message
+					});
+				} catch (exception) {
+					console.error(TAG_NAME, 'pusher error data parser exception', event, exception);
+				}
+			},
+
+			pusherBGMStartHandlerFun(event) { // 触发 BGM_START 已经在playBGM方法中进行处理
+				// this._emitter.emit(EVENT.BGM_PLAY_START, { data: event })
+			},
+
+			pusherBGMProgressHandlerFun(event) {
+				// BGM_PROGRESS
+				this._emitter.emit(EVENT.BGM_PLAY_PROGRESS, event);
+			},
+
+			pusherBGMCompleteHandlerFun(event) {
+				// BGM_COMPLETE
+				this._emitter.emit(EVENT.BGM_PLAY_COMPLETE, event);
+			},
+
+			pusherAudioVolumeNotifyFun: function(event) {
+				// console.log(TAG_NAME, 'pusherAudioVolumeNotifyFun', event)
+				this._emitter.emit(EVENT.LOCAL_AUDIO_VOLUME_UPDATE, event);
+			},
+
+			// player event handler
+			// 获取 player ID 再进行触发
+			playerStateChangeFun(event) {
+				// console.log(TAG_NAME, 'playerStateChangeFun', event)
+				this._emitter.emit(EVENT.REMOTE_STATE_UPDATE, event);
+			},
+
+			playerFullscreenChangeFun(event) {
+				// console.log(TAG_NAME, 'playerFullscreenChangeFun', event)
+				this._emitter.emit(EVENT.REMOTE_FULLSCREEN_UPDATE, event);
+
+				this._emitter.emit(EVENT.VIDEO_FULLSCREEN_UPDATE, event);
+			},
+
+			playerNetStatusFun(event) {
+				// console.log(TAG_NAME, 'playerNetStatusFun', event)
+				// 获取player 视频的宽高
+				const stream = this.userController.getStream({
+					userID: event.currentTarget.dataset.userid,
+					streamType: event.currentTarget.dataset.streamtype
+				});
+
+				if (stream && (stream.videoWidth !== event.detail.info.videoWidth || stream.videoHeight !== event.detail
+						.info.videoHeight)) {
+					console.log(TAG_NAME, 'playerNetStatusFun update video size', event);
+					stream.videoWidth = event.detail.info.videoWidth;
+					stream.videoHeight = event.detail.info.videoHeight;
+				}
+
+				this._emitter.emit(EVENT.REMOTE_NET_STATE_UPDATE, event);
+			},
+
+			playerAudioVolumeNotifyFun(event) {
+				// console.log(TAG_NAME, 'playerAudioVolumeNotifyFun', event)
+				this._emitter.emit(EVENT.REMOTE_AUDIO_VOLUME_UPDATE, event);
+			},
+
+			filterVisibleStreamFun(streamList, skipPagination) {
+				const list = streamList.filter(item => {
+					// 全部显示
+					// return true
+					// 只显示有视频或者有音频的 stream
+					return item.hasVideo || item.hasAudio;
+				}); // 按 userID 进行排序
+
+				list.sort((item1, item2) => {
+					const id1 = item1.userID.toUpperCase();
+					const id2 = item2.userID.toUpperCase();
+
+					if (id1 < id2) {
+						return -1;
+					}
+
+					if (id1 > id2) {
+						return 1;
+					}
+
+					return 0;
+				});
+
+				if (this.template === 'grid' && !skipPagination) {
+					this.filterGridPageVisibleStreamFun(
+					list); // console.log(TAG_NAME, '_filterVisibleStream gridPagePlaceholderStreamList:', this.data.gridPagePlaceholderStreamList)
+
+					if ( // list.length > this.data.gridPlayerPerPage - 2 &&
+						this.gridCurrentPage > 1 && this.gridPagePlaceholderStreamList.length === this.gridPlayerPerPage) {
+						// 如果stream 数量大于每页可显示数量，当前页面已经没有可显示的stream(占位数量==3) 回到上一个页面。
+						this.gridPageToPrevFun(list);
+					}
+				} // console.log(TAG_NAME, '_filterVisibleStream list:', list)
+
+
+				return list;
+			},
+
+			filterGridPageVisibleStreamFun(list) {
+				// 最多只显示 gridPlayerPerPage 个stream
+				const length = list.length; // +1 pusher
+
+				this.gridPageCount = Math.ceil((length + 1) / this.gridPlayerPerPage);
+				this.gridPagePlaceholderStreamList = [];
+				let visibleCount = 0; // 需要显示的player区间
+
+				let interval;
+
+				if (this.gridPlayerPerPage > 3) {
+					if (this.gridCurrentPage === 1) {
+						interval = [-1, this.gridPlayerPerPage - 1];
+					} else {
+						// 每页显示4个时，第一页显示3个，pusher只在第一页
+						// -1 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14
+						//    1     2       3        4
+						// -1 3
+						// 2 7
+						// 6 11
+						interval = [this.gridCurrentPage * this.gridPlayerPerPage - (this.gridPlayerPerPage + 2), this
+							.gridCurrentPage * this.gridPlayerPerPage - 1
+						];
+					}
+				} else {
+					// 每页显示3个，每页都有pusher
+					interval = [this.gridCurrentPage * this.gridPlayerPerPage - (this.gridPlayerPerPage + 1), this
+						.gridCurrentPage * this.gridPlayerPerPage
+					];
+				}
+
+				for (let i = 0; i < length; i++) {
+					if (i > interval[0] && i < interval[1]) {
+						list[i].isVisible = true;
+						list[i].muteVideo = list[i].muteVideoPrev === undefined ? list[i].muteVideo : list[i]
+						.muteVideoPrev;
+						visibleCount++;
+					} else {
+						list[i].isVisible = false;
+						list[i].muteVideo = true;
+					}
+				} // 第一页，不需要占位
+
+
+				if (this.gridCurrentPage !== 1) {
+					for (let i = 0; i < this.gridPlayerPerPage - visibleCount; i++) {
+						this.gridPagePlaceholderStreamList.push({
+							id: 'holder-' + i
+						});
+					}
+				}
+
+				return list;
+			},
+
+			/**
+			 * 保持屏幕常亮
+			 */
+			keepScreenOnFun() {
+				setInterval(() => {
+					uni.setKeepScreenOn({
+						keepScreenOn: true
+					});
+				}, 20000);
+			},
+
+			//  ______  __       __        ______             __                                              __
+			//  |      \|  \     /  \      |      \           |  \                                            |  \
+			//   \$$$$$$| $$\   /  $$       \$$$$$$ _______  _| $$_     ______    ______   _______    ______  | $$
+			//    | $$  | $$$\ /  $$$        | $$  |       \|   $$ \   /      \  /      \ |       \  |      \ | $$
+			//    | $$  | $$$$\  $$$$        | $$  | $$$$$$$\\$$$$$$  |  $$$$$$\|  $$$$$$\| $$$$$$$\  \$$$$$$\| $$
+			//    | $$  | $$\$$ $$ $$        | $$  | $$  | $$ | $$ __ | $$    $$| $$   \$$| $$  | $$ /      $$| $$
+			//   _| $$_ | $$ \$$$| $$       _| $$_ | $$  | $$ | $$|  \| $$$$$$$$| $$      | $$  | $$|  $$$$$$$| $$
+			//  |   $$ \| $$  \$ | $$      |   $$ \| $$  | $$  \$$  $$ \$$     \| $$      | $$  | $$ \$$    $$| $$
+			//   \$$$$$$ \$$      \$$       \$$$$$$ \$$   \$$   \$$$$   \$$$$$$$ \$$       \$$   \$$  \$$$$$$$ \$$
+
+			/**
+			 * 初始化 IM SDK
+			 * @param {Object} config sdkAppID
+			 */
+			initIMFun(config) {
+				if (!config.enableIM || !config.sdkAppID || this.tim) {
+					return;
+				}
+
+				console.log(TAG_NAME, '_initIM', config); // 初始化 sdk 实例
+
+				const tim = TIM.create({
+					SDKAppID: config.sdkAppID
+				}); // 0 普通级别，日志量较多，接入时建议使用
+				// 1 release级别，SDK 输出关键信息，生产环境时建议使用
+				// 2 告警级别，SDK 只输出告警和错误级别的日志
+				// 3 错误级别，SDK 只输出错误级别的日志
+				// 4 无日志级别，SDK 将不打印任何日志
+
+				if (config.debugMode) {
+					tim.setLogLevel(1);
+				} else {
+					tim.setLogLevel(4);
+				} // 取消监听
+
+
+				tim.off(TIM.EVENT.SDK_READY, this.onIMReadyFun);
+				tim.off(TIM.EVENT.MESSAGE_RECEIVED, this.onIMMessageReceivedFun);
+				tim.off(TIM.EVENT.SDK_NOT_READY, this.onIMNotReadyFun);
+				tim.off(TIM.EVENT.KICKED_OUT, this.onIMKickedOutFun);
+				tim.off(TIM.EVENT.ERROR, this.onIMErrorFun); // 监听事件
+
+				tim.on(TIM.EVENT.SDK_READY, this.onIMReadyFun, this);
+				tim.on(TIM.EVENT.MESSAGE_RECEIVED, this.onIMMessageReceivedFun, this);
+				tim.on(TIM.EVENT.SDK_NOT_READY, this.onIMNotReadyFun, this);
+				tim.on(TIM.EVENT.KICKED_OUT, this.onIMKickedOutFun, this);
+				tim.on(TIM.EVENT.ERROR, this.onIMErrorFun, this);
+				this.tim = tim;
+				uni.tim = tim;
+			},
+
+			loginIMFun(params) {
+				if (!this.tim) {
+					return;
+				}
+
+				console.log(TAG_NAME, '_loginIM', params);
+				return this.tim.login({
+					userID: params.userID,
+					userSig: params.userSig
+				});
+			},
+
+			logoutIMFun() {
+				if (!this.tim) {
+					return;
+				}
+
+				console.log(TAG_NAME, '_logoutIM');
+				return this.tim.logout();
+			},
+
+			exitIMFun() {
+				// 方法需要调用限制，否则重复解散群 退群会有warn
+				if (this.exitIMThrottle || !this.tim) {
+					return;
+				}
+
+				this.exitIMThrottle = true;
+				const userList = this.getRemoteUserList();
+				const roomID = this.config.roomID;
+				const userID = this.config.userID;
+				this.searchGroupFun({
+					roomID
+				}).then(imResponse => {
+					// 查询群资料，判断是否为群主
+					if (imResponse.data.group.ownerID === userID && userList.length === 0) {
+						// 如果 userList 为 0 群主可以解散群，并登出IM
+						this.dismissGroupFun({
+							roomID
+						}).then(() => {
+							this.exitIMThrottle = false;
+							this.logoutIMFun();
+						}).catch(imError => {
+							this.exitIMThrottle = false;
+							this.logoutIMFun();
+						});
+					} else if (imResponse.data.group.ownerID === userID) {
+						this.exitIMThrottle = false; // 群主不能退群只能登出
+
+						this.logoutIMFun();
+					} else {
+						// 普通成员退群并登出IM
+						this.quitGroupFun({
+							roomID
+						}).then(() => {
+							this.exitIMThrottle = false;
+							this.logoutIMFun();
+						}).catch(imError => {
+							this.exitIMThrottle = false;
+							this.logoutIMFun();
+						});
+					}
+				}).catch(imError => {
+					this.exitIMThrottle = false; // 查询异常直接登出
+
+					this.logoutIMFun();
+				});
+			},
+
+			searchGroupFun(params) {
+				if (!this.tim) {
+					return;
+				}
+
+				console.log(TAG_NAME, '_searchGroup', params);
+				const tim = this.tim;
+				const promise = tim.searchGroupByID(params.roomID + '');
+				promise.then(function(imResponse) {
+					// const group = imResponse.data.group // 群组信息
+					console.log(TAG_NAME, '_searchGroup success', imResponse);
+				}).catch(function(imError) {
+					console.warn(TAG_NAME, '_searchGroup fail，TIM 报错信息不影响后续逻辑，可以忽略', imError); // 搜素群组失败的相关信息
+				});
+				return promise;
+			},
+
+			/**
+			 * 创建 AVchatroom
+			 * @param {*} params roomID
+			 * @returns {Promise}
+			 */
+			createGroupFun(params) {
+				if (!this.tim) {
+					return;
+				}
+
+				console.log(TAG_NAME, '_createGroup', params);
+				const promise = this.tim.createGroup({
+					groupID: params.roomID + '',
+					name: params.roomID + '',
+					type: IM_GROUP_TYPE
+				});
+				promise.then(imResponse => {
+					// 创建成功
+					console.log(TAG_NAME, '_createGroup success', imResponse.data.group); // 创建的群的资料
+				}).catch(imError => {
+					console.warn(TAG_NAME, '_createGroup error', imError); // 创建群组失败的相关信息
+				});
+				return promise;
+			},
+
+			/**
+			 * 进入 AVchatroom
+			 * @param {*} params roomID
+			 * @returns {Promise}
+			 */
+			joinGroupFun(params) {
+				if (!this.tim) {
+					return;
+				}
+
+				console.log(TAG_NAME, '_joinGroup', params);
+				const promise = this.tim.joinGroup({
+					groupID: params.roomID + '',
+					type: IM_GROUP_TYPE
+				});
+				promise.then(imResponse => {
+					switch (imResponse.data.status) {
+						case TIM.TYPES.JOIN_STATUS_WAIT_APPROVAL:
+							// 等待管理员同意
+							break;
+
+						case TIM.TYPES.JOIN_STATUS_SUCCESS: // 加群成功
+
+						case TIM.TYPES.JOIN_STATUS_ALREADY_IN_GROUP:
+							// 已经在群中
+							// console.log(imResponse.data.group) // 加入的群组资料
+							// wx.showToast({
+							//   title: '进群成功',
+							// })
+							console.log(TAG_NAME, '_joinGroup success', imResponse);
+							break;
+
+						default:
+							break;
+					}
+				}).catch(imError => {
+					console.warn(TAG_NAME, 'joinGroup error', imError); // 申请加群失败的相关信息
+				});
+				return promise;
+			},
+
+			quitGroupFun(params) {
+				if (!this.tim) {
+					return;
+				}
+
+				console.log(TAG_NAME, '_quitGroup', params);
+				const promise = this.tim.quitGroup(params.roomID + '');
+				promise.then(imResponse => {
+					console.log(TAG_NAME, '_quitGroup success', imResponse);
+				}).catch(imError => {
+					console.warn(TAG_NAME, 'quitGroup error', imError);
+				});
+				return promise;
+			},
+
+			dismissGroupFun(params) {
+				if (!this.tim) {
+					return;
+				}
+
+				console.log(TAG_NAME, '_dismissGroup', params);
+				const promise = this.tim.dismissGroup(params.roomID + '');
+				promise.then(imResponse => {
+					console.log(TAG_NAME, '_dismissGroup success', imResponse);
+				}).catch(imError => {
+					console.warn(TAG_NAME, '_dismissGroup error', imError);
+				});
+				return promise;
+			},
+
+			onIMReadyFun(event) {
+				console.log(TAG_NAME, 'IM.READY', event);
+
+				this._emitter.emit(EVENT.IM_READY, event);
+
+				const roomID = this.config.roomID; // 查询群组是否存在
+
+				this.searchGroupFun({
+					roomID
+				}).then(res => {
+					// console.log(TAG_NAME, 'searchGroup', res)
+					// 存在直接进群
+					this.joinGroupFun({
+						roomID
+					});
+				}).catch(() => {
+					// 不存在则创建，如果是avchatroom 创建后进群
+					this.createGroupFun({
+						roomID
+					}).then(res => {
+						// 进群
+						this.joinGroupFun({
+							roomID
+						});
+					}).catch(imError => {
+						if (imError.code === 10021) {
+							console.log(TAG_NAME, '群已存在，直接进群', event);
+							this.joinGroupFun({
+								roomID
+							});
+						}
+					});
+				}); // 收到离线消息和会话列表同步完毕通知，接入侧可以调用 sendMessage 等需要鉴权的接口
+				// event.name - TIM.EVENT.IM_READY
+			},
+
+			onIMMessageReceivedFun(event) {
+				// 收到推送的单聊、群聊、群提示、群系统通知的新消息，可通过遍历 event.data 获取消息列表数据并渲染到页面
+				console.log(TAG_NAME, 'IM.MESSAGE_RECEIVED', event); // messageList 仅保留10条消息
+
+				const messageData = event.data;
+				const roomID = this.config.roomID + '';
+				const userID = this.config.userID + '';
+
+				for (let i = 0; i < messageData.length; i++) {
+					const message = messageData[
+					i]; // console.log(TAG_NAME, 'IM.MESSAGE_RECEIVED', message, this.data.config, TIM.TYPES.MSG_TEXT)
+
+					if (message.to === roomID + '' || message.to === userID) {
+						// 遍历messageData 获取当前room 或者当前user的消息
+						console.log(TAG_NAME, 'IM.MESSAGE_RECEIVED', message, message.type, TIM.TYPES.MSG_TEXT);
+
+						if (message.type === TIM.TYPES.MSG_TEXT) {
+							this.pushMessageListFun({
+								name: message.from,
+								message: message.payload.text
+							});
+						} else {
+							if (message.type === TIM.TYPES.MSG_GRP_SYS_NOTICE && message.payload.operationType === 2) {
+								// 群系统通知
+								this.pushMessageListFun({
+									name: '系统通知',
+									message: `欢迎 ${userID}`
+								});
+							} // 其他消息暂不处理
+
+						}
+					}
+				}
+
+				this._emitter.emit(EVENT.IM_MESSAGE_RECEIVED, event);
+			},
+
+			onIMNotReadyFun(event) {
+				console.log(TAG_NAME, 'IM.NOT_READY', event);
+
+				this._emitter.emit(EVENT.IM_NOT_READY, event); // 收到 SDK 进入 not ready 状态通知，此时 SDK 无法正常工作
+				// event.name - TIM.EVENT.IM_NOT_READY
+
+			},
+
+			onIMKickedOutFun(event) {
+				console.log(TAG_NAME, 'IM.KICKED_OUT', event);
+
+				this._emitter.emit(EVENT.IM_KICKED_OUT, event); // 收到被踢下线通知
+				// event.name - TIM.EVENT.KICKED_OUT
+				// event.data.type - 被踢下线的原因，例如 :
+				//    - TIM.TYPES.KICKED_OUT_MULT_ACCOUNT 多实例登录被踢
+				//    - TIM.TYPES.KICKED_OUT_MULT_DEVICE 多终端登录被踢
+				//    - TIM.TYPES.KICKED_OUT_USERSIG_EXPIRED 签名过期被踢。使用前需要将SDK版本升级至v2.4.0或以上。
+
+			},
+
+			onIMErrorFun(event) {
+				console.log(TAG_NAME, 'IM.ERROR', event);
+
+				this._emitter.emit(EVENT.IM_ERROR, event); // 收到 SDK 发生错误通知，可以获取错误码和错误信息
+				// event.name - TIM.EVENT.ERROR
+				// event.data.code - 错误码
+				// event.data.message - 错误信息
+
+			},
+
+			//  ________                                  __             __
+			//  |        \                                |  \           |  \
+			//   \$$$$$$$$______   ______ ____    ______  | $$  ______  _| $$_     ______
+			//     | $$  /      \ |      \    \  /      \ | $$ |      \|   $$ \   /      \
+			//     | $$ |  $$$$$$\| $$$$$$\$$$$\|  $$$$$$\| $$  \$$$$$$\\$$$$$$  |  $$$$$$\
+			//     | $$ | $$    $$| $$ | $$ | $$| $$  | $$| $$ /      $$ | $$ __ | $$    $$
+			//     | $$ | $$$$$$$$| $$ | $$ | $$| $$__/ $$| $$|  $$$$$$$ | $$|  \| $$$$$$$$
+			//     | $$  \$$     \| $$ | $$ | $$| $$    $$| $$ \$$    $$  \$$  $$ \$$     \
+			//      \$$   \$$$$$$$ \$$  \$$  \$$| $$$$$$$  \$$  \$$$$$$$   \$$$$   \$$$$$$$
+			//                                  | $$
+			//                                  | $$
+			//                                   \$$
+			// 以下为 debug & template 相关函数
+			toggleVideoFun() {
+				if (this.pusher.enableCamera) {
+					this.unpublishLocalVideo();
+				} else {
+					this.publishLocalVideo();
+				}
+			},
+
+			toggleAudioFun() {
+				if (this.pusher.enableMic) {
+					this.unpublishLocalAudio();
+				} else {
+					this.publishLocalAudio();
+				}
+			},
+
+			debugToggleRemoteVideoFun(event) {
+				console.log(TAG_NAME, '_debugToggleRemoteVideo', event.currentTarget.dataset);
+				const userID = event.currentTarget.dataset.userID;
+				const streamType = event.currentTarget.dataset.streamType;
+				const stream = this.streamList.find(item => {
+					return item.userID === userID && item.streamType === streamType;
+				});
+
+				if (stream.muteVideo) {
+					this.subscribeRemoteVideo({
+						userID,
+						streamType
+					}); // this.setViewVisible({ userID, streamType, isVisible: true })
+				} else {
+					this.unsubscribeRemoteVideo({
+						userID,
+						streamType
+					}); // this.setViewVisible({ userID, streamType, isVisible: false })
+				}
+			},
+
+			debugToggleRemoteAudioFun(event) {
+				console.log(TAG_NAME, '_debugToggleRemoteAudio', event.currentTarget.dataset);
+				const userID = event.currentTarget.dataset.userID;
+				const streamType = event.currentTarget.dataset.streamType;
+				const stream = this.streamList.find(item => {
+					return item.userID === userID && item.streamType === streamType;
+				});
+
+				if (stream.muteAudio) {
+					this.subscribeRemoteAudio({
+						userID
 					});
 				} else {
-					// player
-					this.userController.getStream(params).playerContext.snapshot({
-						quality: 'raw',
-						complete: result => {
-							console.log(TAG_NAME, 'snapshot player', result);
+					this.unsubscribeRemoteAudio({
+						userID
+					});
+				}
+			},
 
-							if (result.tempImagePath) {
-								resolve(result);
-							} else {
-								console.log('snapShot 回调失败', result);
-								reject(new Error('截图失败'));
-							}
+			debugToggleVideoDebugFun() {
+				this.setData({
+					debug: !this.debug
+				});
+			},
+
+			debugExitRoomFun() {
+				this.exitRoom();
+			},
+
+			debugEnterRoomFun() {
+				Object.assign(this.pusher, this.config);
+				this.enterRoom({
+					roomID: this.config.roomID
+				}).then(() => {
+					setTimeout(() => {
+						this.publishLocalVideo();
+						this.publishLocalAudio();
+					}, 2000); // 进房后开始推送视频或音频
+				});
+			},
+
+			debugGoBackFun() {
+				uni.navigateBack({
+					delta: 1
+				});
+			},
+
+			debugTogglePanelFun() {
+				this.setData({
+					debugPanel: !this.debugPanel
+				});
+			},
+
+			debugSendRandomMessageFun() {
+				const userList = this.getRemoteUserList();
+
+				if (userList.length === 0 || !this.tim) {
+					return false;
+				}
+
+				const roomID = this.config.roomID;
+				const message = `Hello! ${userList[0].userID} ${9999 * Math.random()}`;
+				const userID = userList[0].userID;
+				this.sendC2CTextMessage({
+					userID: userID,
+					message: message
+				});
+				const promise = this.sendGroupTextMessage({
+					roomID: roomID,
+					message: message
+				}); // 消息上屏
+
+				this.pushMessageListFun({
+					name: userID,
+					message: message
+				});
+				promise.then(function(imResponse) {
+					// 发送成功
+					console.log(TAG_NAME, '_debugSendRandomMessage success', imResponse);
+					uni.showToast({
+						title: '发送成功',
+						icon: 'success',
+						duration: 1000
+					});
+				}).catch(function(imError) {
+					// 发送失败
+					console.warn(TAG_NAME, '_debugSendRandomMessage error', imError);
+					uni.showToast({
+						title: '发送失败',
+						icon: 'none',
+						duration: 1000
+					});
+				});
+			},
+
+			toggleAudioVolumeTypeFun() {
+				if (this.pusher.audioVolumeType === 'voicecall') {
+					this.setPusherConfigFun({
+						audioVolumeType: 'media'
+					});
+				} else {
+					this.setPusherConfigFun({
+						audioVolumeType: 'voicecall'
+					});
+				}
+			},
+
+			toggleSoundModeFun() {
+				if (this.userList.length === 0) {
+					return;
+				}
+
+				const stream = this.userController.getStream({
+					userID: this.userList[0].userID,
+					streamType: 'main'
+				});
+
+				if (stream) {
+					if (stream.soundMode === 'speaker') {
+						stream['soundMode'] = 'ear';
+					} else {
+						stream['soundMode'] = 'speaker';
+					}
+
+					this.setPlayerConfigFun({
+						userID: stream.userID,
+						streamType: 'main',
+						config: {
+							soundMode: stream['soundMode']
 						}
 					});
 				}
-			});
-		},
+			},
 
-		/**
-		 * 将远端视频全屏
-		 * @param {Object} params userID streamType direction
-		 * @returns {Promise}
-		 */
-		enterFullscreen: function(params) {
-			console.log(TAG_NAME, 'enterFullscreen', params);
-			return new Promise((resolve, reject) => {
-				this.userController.getStream(params).playerContext.requestFullScreen({
-					direction: params.direction || 0,
-					success: event => {
-						console.log(TAG_NAME, 'enterFullscreen success', event);
-						resolve(event);
-					},
-					fail: event => {
-						console.log(TAG_NAME, 'enterFullscreen fail', event);
-						reject(event);
-					}
+			/**
+			 * 退出通话
+			 */
+			hangUpFun() {
+				this.exitRoom();
+				uni.navigateBack({
+					delta: 1
 				});
-			});
-		},
+			},
 
-		/**
-		 * 将远端视频取消全屏
-		 * @param {Object} params userID streamType
-		 * @returns {Promise}
-		 */
-		exitFullscreen: function(params) {
-			console.log(TAG_NAME, 'exitFullscreen', params);
-			return new Promise((resolve, reject) => {
-				this.userController.getStream(params).playerContext.exitFullScreen({
-					success: event => {
-						console.log(TAG_NAME, 'exitFullScreen success', event);
-						resolve(event);
-					},
-					fail: event => {
-						console.log(TAG_NAME, 'exitFullScreen fail', event);
-						reject(event);
-					}
+			/**
+			 * 切换订阅音频状态
+			 */
+			handleSubscribeAudio() {
+				if (this.pusher.enableMic) {
+					this.unpublishLocalAudio();
+				} else {
+					this.publishLocalAudio();
+				}
+			},
+
+			/**
+			 * 切换订阅远端视频状态
+			 * @param {Object} event native 事件对象
+			 */
+			handleSubscribeRemoteVideoFun(event) {
+				const userID = event.currentTarget.dataset.userID;
+				const streamType = event.currentTarget.dataset.streamType;
+				const stream = this.streamList.find(item => {
+					return item.userID === userID && item.streamType === streamType;
 				});
-			});
-		},
 
-		/**
-		 * 设置 player 视图的横竖屏显示
-		 * @param {Object} params userID streamType orientation: vertical, horizontal
-		 * @returns {Promise}
-		 */
-		setRemoteOrientation: function(params) {
-			return this.setPlayerConfigFun({
-				userID: params.userID,
-				streamType: params.streamType,
-				config: {
-					orientation: params.orientation
+				if (stream.muteVideo) {
+					this.subscribeRemoteVideo({
+						userID,
+						streamType
+					});
+				} else {
+					this.unsubscribeRemoteVideo({
+						userID,
+						streamType
+					});
 				}
-			});
-		},
-		// 改为：
-		setViewOrientation: function(params) {
-			return this.setPlayerConfigFun({
-				userID: params.userID,
-				streamType: params.streamType,
-				config: {
-					orientation: params.orientation
-				}
-			});
-		},
+			},
 
-		/**
-		 * 设置 player 视图的填充模式
-		 * @param {Object} params userID streamType fillMode: contain，fillCrop
-		 * @returns {Promise}
-		 */
-		setRemoteFillMode: function(params) {
-			return this.setPlayerConfigFun({
-				userID: params.userID,
-				streamType: params.streamType,
-				config: {
-					objectFit: params.fillMode
-				}
-			});
-		},
-		// 改为：
-		setViewFillMode: function(params) {
-			return this.setPlayerConfigFun({
-				userID: params.userID,
-				streamType: params.streamType,
-				config: {
-					objectFit: params.fillMode
-				}
-			});
-		},
+			/**
+			 *
+			 * @param {Object} event native 事件对象
+			 */
+			handleSubscribeRemoteAudioFun(event) {
+				const userID = event.currentTarget.dataset.userID;
+				const streamType = event.currentTarget.dataset.streamType;
+				const stream = this.streamList.find(item => {
+					return item.userID === userID && item.streamType === streamType;
+				});
 
-		/**
-		 * 切换 player 大小画面
-		 * @param {Object} params userID streamType definition: HD SD
-		 * @returns {Promise}
-		 */
-		setRemoteDefinitionFun: function(params) {
-			params.streamType = 'main';
-			return new Promise((resolve, reject) => {
+				if (stream.muteAudio) {
+					this.subscribeRemoteAudio({
+						userID
+					});
+				} else {
+					this.unsubscribeRemoteAudio({
+						userID
+					});
+				}
+			},
+
+			/**
+			 * grid布局, 唤起 memberlist-panel
+			 */
+			switchMemberListPanelFun() {
+				this.setData({
+					panelName: this.panelName !== 'memberlist-panel' ? 'memberlist-panel' : ''
+				});
+			},
+
+			/**
+			 * grid布局, 唤起 setting-panel
+			 */
+			switchSettingPanelFun() {
+				this.setData({
+					panelName: this.panelName !== 'setting-panel' ? 'setting-panel' : ''
+				});
+			},
+
+			switchBGMPanelFun() {
+				this.setData({
+					panelName: this.panelName !== 'bgm-panel' ? 'bgm-panel' : ''
+				});
+			},
+
+			handleMaskerClickFun() {
+				this.setData({
+					panelName: ''
+				});
+			},
+
+			setPuserPropertyFun(event) {
+				console.log(TAG_NAME, 'setPuserPropertyFun', event);
+				const key = event.currentTarget.dataset.key;
+				const valueType = event.currentTarget.dataset.valueType;
+				let value = event.currentTarget.dataset.value;
+				const config = {};
+
+				if (valueType === 'boolean') {
+					value = value === 'true' ? true : false;
+					config[key] = !this.pusher[key];
+				}
+
+				if (valueType === 'number' && value.indexOf('|') > 0) {
+					value = value.split('|'); // console.log(this.data.pusher, this.data.pusher[key], key, value)
+
+					if (this.pusher[key] === Number(value[0])) {
+						config[key] = Number(value[1]);
+					} else {
+						config[key] = Number(value[0]);
+					}
+				}
+
+				if (valueType === 'string' && value.indexOf('|') > 0) {
+					value = value.split('|');
+
+					if (this.pusher[key] === value[0]) {
+						config[key] = value[1];
+					} else {
+						config[key] = value[0];
+					}
+				}
+
+				this.setPusherConfigFun(config);
+			},
+
+			setPlayerPropertyFun(event) {
+				console.log(TAG_NAME, 'setPlayerPropertyFun', event);
+				const userID = event.currentTarget.dataset.userid;
+				const streamType = event.currentTarget.dataset.streamtype;
+				const key = event.currentTarget.dataset.key;
+				let value = event.currentTarget.dataset.value;
 				const stream = this.userController.getStream({
-					userID: params.userID,
-					streamType: params.streamType
+					userID: userID,
+					streamType: streamType
+				});
+
+				if (!stream) {
+					return;
+				}
+
+				const config = {};
+
+				if (value === 'true') {
+					value = true;
+				} else if (value === 'false') {
+					value = false;
+				}
+
+				if (typeof value === 'boolean') {
+					config[key] = !stream[key];
+				} else if (typeof value === 'string' && value.indexOf('|') > 0) {
+					value = value.split('|');
+
+					if (stream[key] === value[0]) {
+						config[key] = value[1];
+					} else {
+						config[key] = value[0];
+					}
+				}
+
+				console.log(TAG_NAME, 'setPlayerPropertyFun', config);
+				this.setPlayerConfigFun({
+					userID,
+					streamType,
+					config
+				});
+			},
+
+			changePropertyFun(event) {
+				const propertyName = event.currentTarget.dataset.propertyName;
+				const newData = {};
+				newData[propertyName] = event.detail.value;
+				this.setData(newData);
+				const volume = newData[propertyName] / 100;
+
+				switch (propertyName) {
+					case 'MICVolume':
+						this.setMICVolume({
+							volume
+						});
+						break;
+
+					case 'BGMVolume':
+						this.setBGMVolume({
+							volume
+						});
+						break;
+				}
+			},
+
+			switchStreamTypeFun(event) {
+				const userID = event.currentTarget.dataset.userid;
+				const streamType = event.currentTarget.dataset.streamtype;
+				const stream = this.userController.getStream({
+					userID: userID,
+					streamType: streamType
 				});
 
 				if (stream && stream.streamType === 'main') {
-					console.log(TAG_NAME, '_switchStreamType', stream.src); // stream.volume = volume
-
-					if (stream.src.indexOf('main') > -1) {
-						stream.src = stream.src.replace('main', 'small');
-						stream._streamType = 'small'; // 用于设置面板的渲染
-					} else if (stream.src.indexOf('small') > -1) {
-						stream.src = stream.src.replace('small', 'main');
-						stream._streamType = 'main';
+					if (stream._definitionType === 'small') {
+						this.subscribeRemoteVideo({
+							userID,
+							streamType: 'main'
+						});
+					} else {
+						this.subscribeRemoteVideo({
+							userID,
+							streamType: 'small'
+						});
 					}
-
-					console.log(TAG_NAME, '_switchStreamType', stream.src);
-					this.setData(
-						{
-							streamList: this.streamList
-						},
-						() => {}
-					);
 				}
-			});
-		},
+			},
 
-		initStatusFun() {
-			this.status = {
-				isPush: false,
-				// 推流状态
-				isPending: false // 挂起状态，触发5000事件标记为true，onShow后标记为false
-			};
-			this._lastTapTime = 0;
-			this._beforeLastTapTime = 0;
-			this._isFullscreen = false;
-		},
-
-		/**
-		 * 设置推流参数并触发页面渲染更新
-		 * @param {Object} config live-pusher 的配置
-		 * @returns {Promise}
-		 */
-		setPusherConfigFun(config) {
-			console.log(TAG_NAME, '_setPusherConfig', config, this.pusher);
-			return new Promise((resolve, reject) => {
-				if (!this.pusher) {
-					this.pusher = new Pusher(config);
-				} else {
-					Object.assign(this.pusher, config);
-				}
-
-				this.setData(
-					{
-						pusher: this.pusher
-					},
-					() => {
-						// console.log(TAG_NAME, '_setPusherConfig setData compelete', 'config:', config, 'pusher:', this.data.pusher)
-						resolve(config);
-					}
-				);
-			});
-		},
-
-		/**
-		 *
-		 * @param {Object} params include userID,streamType,config
-		 * @returns {Promise}
-		 */
-		setPlayerConfigFun(params) {
-			const userID = params.userID;
-			const streamType = params.streamType;
-			const config = params.config;
-			console.log(TAG_NAME, '_setPlayerConfig', params);
-			return new Promise((resolve, reject) => {
-				// 获取指定的userID streamType 的 stream
-				const user = this.userController.getUser(userID);
-
-				if (user && user.streams[streamType]) {
-					user.streams[streamType] = Object.assign(user.streams[streamType], config); // user.streams引用的对象和 streamList 里的是同一个
-
-					this.setData(
-						{
-							streamList: this.streamList
-						},
-						() => {
-							// console.log(TAG_NAME, '_setPlayerConfig complete', params, 'streamList:', this.data.streamList)
-							resolve(params);
-						}
-					);
-				} else {
-					// 不需要reject，静默处理
-					console.warn(TAG_NAME, '指定 userID 或者 streamType 不存在'); // reject(new Error('指定 userID 或者 streamType 不存在'))
-				}
-			});
-		},
-
-		/**
-		 * 必选参数检测
-		 * @param {Object} rtcConfig rtc参数
-		 * @returns {Boolean}
-		 */
-		checkParamFun: function(rtcConfig) {
-			console.log(TAG_NAME, 'checkParam config:', rtcConfig);
-
-			if (!rtcConfig.sdkAppID) {
-				console.error('未设置 sdkAppID');
-				return false;
-			}
-
-			if (rtcConfig.roomID === undefined) {
-				console.error('未设置 roomID');
-				return false;
-			}
-
-			if (rtcConfig.roomID < 1 || rtcConfig.roomID > 4294967296) {
-				console.error('roomID 超出取值范围 1 ~ 4294967295');
-				return false;
-			}
-
-			if (!rtcConfig.userID) {
-				console.error('未设置 userID');
-				return false;
-			}
-
-			if (!rtcConfig.userSig) {
-				console.error('未设置 userSig');
-				return false;
-			}
-
-			if (!rtcConfig.template) {
-				console.error('未设置 template');
-				return false;
-			}
-
-			return true;
-		},
-		getPushUrlFun: function(rtcConfig) {
-			// 拼接 puhser url rtmp 方案
-			console.log(TAG_NAME, 'getPushUrl', rtcConfig);
-
-			if (ENV.IS_TRTC) {
-				// 版本高于7.0.8，基础库版本高于2.10.0 使用新的 url
-				return new Promise((resolve, reject) => {
-					// appscene videocall live
-					// cloudenv PRO CCC DEV UAT
-					// encsmall 0
-					// 对外的默认值是rtc ，对内的默认值是videocall
-					rtcConfig.scene = !rtcConfig.scene || rtcConfig.scene === 'rtc' ? 'videocall' : 'live';
-					rtcConfig.enableBlackStream = rtcConfig.enableBlackStream || 1;
-					rtcConfig.encsmall = rtcConfig.encsmall || 0;
-					rtcConfig.cloudenv = rtcConfig.cloudenv || 'PRO';
-					setTimeout(() => {
-						const pushUrl =
-							'room://cloud.tencent.com/rtc?sdkappid=' +
-							rtcConfig.sdkAppID +
-							'&roomid=' +
-							rtcConfig.roomID +
-							'&userid=' +
-							rtcConfig.userID +
-							'&usersig=' +
-							rtcConfig.userSig +
-							'&appscene=' +
-							rtcConfig.scene +
-							'&encsmall=' +
-							rtcConfig.encsmall +
-							'&cloudenv=' +
-							rtcConfig.cloudenv;
-						console.log(TAG_NAME, 'getPushUrl result:', pushUrl);
-						resolve(pushUrl);
-					}, 0);
+			handleSnapshotClickFun(event) {
+				uni.showToast({
+					title: '开始截屏',
+					icon: 'none',
+					duration: 1000
 				});
-			}
-
-			return this.requestSigServerFun(rtcConfig);
-		},
-
-		/**
-		 * 获取签名和推流地址
-		 * @param {Object} rtcConfig 进房参数配置
-		 * @returns {Promise}
-		 */
-		requestSigServerFun: function(rtcConfig) {
-			console.log('requestSigServer:', rtcConfig);
-			const sdkAppID = rtcConfig.sdkAppID;
-			const userID = rtcConfig.userID;
-			const userSig = rtcConfig.userSig;
-			const roomID = rtcConfig.roomID;
-			const privateMapKey = rtcConfig.privateMapKey;
-			rtcConfig.useCloud = rtcConfig.useCloud === undefined ? true : rtcConfig.useCloud;
-			let url = rtcConfig.useCloud ? 'https://official.opensso.tencent-cloud.com/v4/openim/jsonvideoapp' : 'https://yun.tim.qq.com/v4/openim/jsonvideoapp';
-			url += '?sdkappid=' + sdkAppID + '&identifier=' + userID + '&usersig=' + userSig + '&random=' + Date.now() + '&contenttype=json';
-			const reqHead = {
-				Cmd: 1,
-				SeqNo: 1,
-				BusType: 7,
-				GroupId: roomID
-			};
-			const reqBody = {
-				PrivMapEncrypt: privateMapKey,
-				TerminalType: 1,
-				FromType: 3,
-				SdkVersion: 26280566
-			};
-			console.log('requestSigServer:', url, reqHead, reqBody);
-			return new Promise((resolve, reject) => {
-				wx.request({
-					url: url,
-					data: {
-						ReqHead: reqHead,
-						ReqBody: reqBody
-					},
-					method: 'POST',
-					success: res => {
-						console.log('requestSigServer success:', res);
-
-						if (res.data['ErrorCode'] || res.data['RspHead']['ErrorCode'] !== 0) {
-							// console.error(res.data['ErrorInfo'] || res.data['RspHead']['ErrorInfo'])
-							console.error('获取roomsig失败');
-							reject(res);
-						}
-
-						const roomSig = JSON.stringify(res.data['RspBody']);
-						let pushUrl = 'room://cloud.tencent.com?sdkappid=' + sdkAppID + '&roomid=' + roomID + '&userid=' + userID + '&roomsig=' + encodeURIComponent(roomSig); // TODO 需要重新整理的逻辑
-						// 如果有配置纯音频推流或者recordId参数
-
-						if (rtcConfig.pureAudioPushMod || rtcConfig.recordId) {
-							const bizbuf = {
-								Str_uc_params: {
-									pure_audio_push_mod: 0,
-									record_id: 0
-								}
-							}; // 纯音频推流
-
-							if (rtcConfig.pureAudioPushMod) {
-								bizbuf.Str_uc_params.pure_audio_push_mod = rtcConfig.pureAudioPushMod;
-							} else {
-								delete bizbuf.Str_uc_params.pure_audio_push_mod;
-							} // 自动录制时业务自定义id
-
-							if (rtcConfig.recordId) {
-								bizbuf.Str_uc_params.record_id = rtcConfig.recordId;
-							} else {
-								delete bizbuf.Str_uc_params.record_id;
-							}
-
-							pushUrl += '&bizbuf=' + encodeURIComponent(JSON.stringify(bizbuf));
-						}
-
-						console.log('roomSigInfo', pushUrl);
-						resolve(pushUrl);
-					},
-					fail: res => {
-						console.log('requestSigServer fail:', res);
-						reject(res);
-					}
-				});
-			});
-		},
-		doubleTabToggleFullscreenFun: function(event) {
-			const curTime = event.timeStamp;
-			const lastTime = this._lastTapTime; // 已知问题：上次全屏操作后，必须等待1.5s后才能再次进行全屏操作，否则引发SDK全屏异常，因此增加节流逻辑
-
-			const beforeLastTime = this._beforeLastTapTime;
-			console.log(TAG_NAME, 'doubleTabToggleFullscreenFun', event, lastTime, beforeLastTime);
-
-			if (curTime - lastTime > 0 && curTime - lastTime < 300 && lastTime - beforeLastTime > 1500) {
 				const userID = event.currentTarget.dataset.userid;
 				const streamType = event.currentTarget.dataset.streamtype;
+				this.snapshot({
+					userID,
+					streamType
+				});
+			},
+
+			/**
+			 * grid布局, 绑定事件
+			 */
+			gridBindEventFun() {
+				// 远端音量变更
+				this.on(EVENT.REMOTE_AUDIO_VOLUME_UPDATE, event => {
+					const data = event.data;
+					const userID = data.currentTarget.dataset.userid;
+					const streamType = data.currentTarget.dataset.streamtype;
+					const volume = data.detail
+					.volume; // console.log(TAG_NAME, '远端音量变更', userID, streamType, volume, event)
+
+					const stream = this.userController.getStream({
+						userID: userID,
+						streamType: streamType === 'aux' ? 'main' :
+							streamType // 远端推辅流后，音量回调会从辅流的 player 返回，而不是主流player 返回。需要等 native SDK修复。
+
+					});
+
+					if (stream) {
+						stream.volume = volume;
+					}
+
+					this.setData({
+						streamList: this.streamList,
+						visibleStreamList: this.filterVisibleStreamFun(this.streamList, true)
+					}, () => {});
+				});
+				this.on(EVENT.BGM_PLAY_PROGRESS, event => {
+					// console.log(TAG_NAME, '_gridBindEvent on BGM_PLAY_PROGRESS', event)
+					const BGMProgress = event.data.detail.progress / event.data.detail.duration * 100;
+					this.setData({
+						BGMProgress
+					});
+				});
+				this.on(EVENT.LOCAL_AUDIO_VOLUME_UPDATE, event => {
+					// console.log(TAG_NAME, '_gridBindEvent on LOCAL_AUDIO_VOLUME_UPDATE', event)
+					// const data = event.data
+					const volume = event.data.detail.volume; // 避免频繁输出log
+
+					this.setPusherConfigFun({
+						volume
+					}, true);
+				});
+			},
+
+			handleGridTouchStartFun(event) {
+				touchX = event.changedTouches[0].clientX;
+				touchY = event.changedTouches[0].clientY;
+			},
+
+			handleGridTouchEndFun(event) {
+				const x = event.changedTouches[0].clientX;
+				const y = event.changedTouches[0].clientY;
+
+				if (x - touchX > 50 && Math.abs(y - touchY) < 50) {
+					// console.log(TAG_NAME, '向右滑 当前页面', this.data.gridCurrentPage, this.data.gridPageCount)
+					this.gridPagePrevFun();
+				} else if (x - touchX < -50 && Math.abs(y - touchY) < 50) {
+					// console.log(TAG_NAME, '向左滑 当前页面', this.data.gridCurrentPage, this.data.gridPageCount)
+					this.gridPageNextFun();
+				}
+			},
+
+			gridPageToPrevFun(streamList) {
+				const visibleStreamList = this.filterGridPageVisibleStreamFun(streamList);
+
+				if (this.gridPagePlaceholderStreamList.length === this.gridPlayerPerPage) {
+					this.gridCurrentPage--;
+					this.gridPageToPrevFun(streamList);
+				} else {
+					return visibleStreamList;
+				}
+			},
+
+			gridPageNextFun() {
+				this.gridCurrentPage++;
+
+				if (this.gridCurrentPage > this.gridPageCount) {
+					this.gridCurrentPage = 1;
+				}
+
+				this.gridPageSetDataFun();
+			},
+
+			gridPagePrevFun() {
+				this.gridCurrentPage--;
+
+				if (this.gridCurrentPage < 1) {
+					this.gridCurrentPage = this.gridPageCount;
+				}
+
+				this.gridPageSetDataFun();
+			},
+
+			gridPageSetDataFun() {
+				this.gridShowPageTipsFun();
+				const visibleStreamList = this.filterVisibleStreamFun(this.streamList);
+				this.setData({
+					gridCurrentPage: this.gridCurrentPage,
+					gridPageCount: this.gridPageCount,
+					visibleStreamList: visibleStreamList,
+					streamList: this.streamList,
+					gridPagePlaceholderStreamList: this.gridPagePlaceholderStreamList
+				}, () => {});
+			},
+
+			gridShowPageTipsFun(event) {
+				if (this.gridPageCount < 2) {
+					return;
+				}
+
+				console.log(TAG_NAME, '_gridShowPageTips', this);
+
+				if (this.hasGridPageTipsShow) {
+					clearTimeout(this.hasGridPageTipsShow);
+				}
+
+				this.animate('.pages-container', [{
+					opacity: 1
+				}], 100, () => {});
+				this.hasGridPageTipsShow = setTimeout(() => {
+					this.animate('.pages-container', [{
+						opacity: 1
+					}, {
+						opacity: 0.3
+					}], 600, () => {});
+				}, 3000);
+			},
+
+			toggleFullscreenFun(event) {
+				console.log(TAG_NAME, 'toggleFullscreenFun', event);
+				const userID = event.currentTarget.dataset.userID;
+				const streamType = event.currentTarget.dataset.streamType;
 
 				if (this._isFullscreen) {
 					this.exitFullscreen({
 						userID,
 						streamType
-					})
-						.then(() => {
-							this._isFullscreen = false;
-						})
-						.catch(() => {});
+					}).then(() => {
+						this._isFullscreen = false;
+					}).catch(() => {});
 				} else {
 					// const stream = this.userController.getStream({ userID, streamType })
-					let direction; // // 已知问题：视频的尺寸需要等待player触发NetStatus事件才能获取到，如果进房就双击全屏，全屏后的方向有可能不对。
+					const direction = 0; // 已知问题：视频的尺寸需要等待player触发NetStatus事件才能获取到，如果进房就双击全屏，全屏后的方向有可能不对。
 					// if (stream && stream.videoWidth && stream.videoHeight) {
 					//   // 如果是横视频，全屏时进行横屏处理。如果是竖视频，则为0
 					//   direction = stream.videoWidth > stream.videoHeight ? 90 : 0
@@ -1489,823 +3328,374 @@ export default {
 						userID,
 						streamType,
 						direction
-					})
-						.then(() => {
-							this._isFullscreen = true;
-						})
-						.catch(() => {});
+					}).then(() => {
+						this._isFullscreen = true;
+					}).catch(() => {});
 				}
+			},
 
-				this._beforeLastTapTime = lastTime;
-			}
-
-			this._lastTapTime = curTime;
-		},
-
-		/**
-		 * TRTC-room 远端用户和音视频状态处理
-		 */
-		bindEventFun: function() {
-			// 远端用户进房
-			this.userController.on(EVENT.REMOTE_USER_JOIN, event => {
-				console.log(TAG_NAME, '远端用户进房', event, event.data.userID);
-				this.setData(
-					{
-						userList: event.data.userList
-					},
-					() => {
-						this._emitter.emit(EVENT.REMOTE_USER_JOIN, {
-							userID: event.data.userID
-						});
-					}
-				);
-				console.log(TAG_NAME, 'REMOTE_USER_JOIN', 'streamList:', this.streamList, 'userList:', this.userList);
-			}); // 远端用户离开
-
-			this.userController.on(EVENT.REMOTE_USER_LEAVE, event => {
-				console.log(TAG_NAME, '远端用户离开', event, event.data.userID);
-
-				if (event.data.userID) {
-					this.setData(
-						{
-							userList: event.data.userList,
-							streamList: event.data.streamList
-						},
-						() => {
-							this._emitter.emit(EVENT.REMOTE_USER_LEAVE, {
-								userID: event.data.userID
-							});
-						}
-					);
-				}
-
-				console.log(TAG_NAME, 'REMOTE_USER_LEAVE', 'streamList:', this.streamList, 'userList:', this.userList);
-			}); // 视频状态 true
-
-			this.userController.on(EVENT.REMOTE_VIDEO_ADD, event => {
-				console.log(TAG_NAME, '远端视频可用', event, event.data.stream.userID);
-				const stream = event.data.stream;
-				this.setData(
-					{
-						userList: event.data.userList,
-						streamList: event.data.streamList
-					},
-					() => {
-						// 完善 的stream 的 playerContext
-						stream.playerContext = wx.createLivePlayerContext(stream.streamID, this); // 新增的需要触发一次play 默认属性才能生效
-						// stream.playerContext.play()
-						// console.log(TAG_NAME, 'REMOTE_VIDEO_ADD playerContext.play()', stream)
-						// TODO 视频通话模版默认订阅且显示
-
-						this._emitter.emit(EVENT.REMOTE_VIDEO_ADD, {
-							userID: stream.userID,
-							streamType: stream.streamType
-						});
-					}
-				);
-				console.log(TAG_NAME, 'REMOTE_VIDEO_ADD', 'streamList:', this.streamList, 'userList:', this.userList);
-			}); // 视频状态 false
-
-			this.userController.on(EVENT.REMOTE_VIDEO_REMOVE, event => {
-				console.log(TAG_NAME, '远端视频移除', event, event.data.stream.userID);
-				const stream = event.data.stream;
-				this.setData(
-					{
-						userList: event.data.userList,
-						streamList: event.data.streamList
-					},
-					() => {
-						// 有可能先触发了退房事件，用户名下的所有stream都已清除
-						if (stream.userID && stream.streamType) {
-							this._emitter.emit(EVENT.REMOTE_VIDEO_REMOVE, {
-								userID: stream.userID,
-								streamType: stream.streamType
-							});
-						}
-					}
-				);
-				console.log(TAG_NAME, 'REMOTE_VIDEO_REMOVE', 'streamList:', this.streamList, 'userList:', this.userList);
-			}); // 音频可用
-
-			this.userController.on(EVENT.REMOTE_AUDIO_ADD, event => {
-				console.log(TAG_NAME, '远端音频可用', event);
-				const stream = event.data.stream;
-				this.setData(
-					{
-						userList: event.data.userList,
-						streamList: event.data.streamList
-					},
-					() => {
-						stream.playerContext = wx.createLivePlayerContext(stream.streamID, this); // 新增的需要触发一次play 默认属性才能生效
-						// stream.playerContext.play()
-						// console.log(TAG_NAME, 'REMOTE_AUDIO_ADD playerContext.play()', stream)
-
-						this._emitter.emit(EVENT.REMOTE_AUDIO_ADD, {
-							userID: stream.userID,
-							streamType: stream.streamType
-						});
-					}
-				);
-				console.log(TAG_NAME, 'REMOTE_AUDIO_ADD', 'streamList:', this.streamList, 'userList:', this.userList);
-			}); // 音频不可用
-
-			this.userController.on(EVENT.REMOTE_AUDIO_REMOVE, event => {
-				console.log(TAG_NAME, '远端音频移除', event, event.data.stream.userID);
-				const stream = event.data.stream;
-				this.setData(
-					{
-						userList: event.data.userList,
-						streamList: event.data.streamList
-					},
-					() => {
-						// 有可能先触发了退房事件，用户名下的所有stream都已清除
-						if (stream.userID && stream.streamType) {
-							this._emitter.emit(EVENT.REMOTE_AUDIO_REMOVE, {
-								userID: stream.userID,
-								streamType: stream.streamType
-							});
-						}
-					}
-				);
-				console.log(TAG_NAME, 'REMOTE_AUDIO_REMOVE', 'streamList:', this.streamList, 'userList:', this.userList);
-			});
-		},
-
-		/**
-		 * pusher event handler
-		 * @param {*} event 事件实例
-		 */
-		pusherStateChangeHandlerFun: function(event) {
-			const code = event.detail.code;
-			const message = event.detail.message;
-			console.log(TAG_NAME, 'pusherStateChange：', code, event);
-
-			switch (code) {
-				case 0:
-					console.log(message, code);
-					break;
-
-				case 1001:
-					console.log('已经连接推流服务器', code);
-					break;
-
-				case 1002:
-					console.log('已经与服务器握手完毕,开始推流', code);
-					break;
-
-				case 1003:
-					console.log('打开摄像头成功', code);
-					break;
-
-				case 1004:
-					console.log('录屏启动成功', code);
-					break;
-
-				case 1005:
-					console.log('推流动态调整分辨率', code);
-					break;
-
-				case 1006:
-					console.log('推流动态调整码率', code);
-					break;
-
-				case 1007:
-					console.log('首帧画面采集完成', code);
-					break;
-
-				case 1008:
-					console.log('编码器启动', code);
-					break;
-
-				case 1018:
-					console.log('进房成功', code);
-
-					this._emitter.emit(EVENT.LOCAL_JOIN, {
-						userID: this.pusher.userID
-					});
-
-					break;
-
-				case 1019:
-					console.log('退出房间', code);
-
-					this._emitter.emit(EVENT.LOCAL_LEAVE, {
-						userID: this.pusher.userID
-					});
-
-					break;
-
-				case 2003:
-					console.log('渲染首帧视频', code);
-					break;
-
-				case 1020:
-				case 1031:
-				case 1032:
-				case 1033:
-				case 1034:
-					// 通过 userController 处理 1020 1031 1032 1033 1034
-					this.userController.userEventHandler(event);
-					break;
-
-				case -1301:
-					console.error('打开摄像头失败: ', code);
-
-					this._emitter.emit(EVENT.ERROR, {
-						code,
-						message
-					});
-
-					break;
-
-				case -1302:
-					console.error('打开麦克风失败: ', code);
-
-					this._emitter.emit(EVENT.ERROR, {
-						code,
-						message
-					});
-
-					break;
-
-				case -1303:
-					console.error('视频编码失败: ', code);
-
-					this._emitter.emit(EVENT.ERROR, {
-						code,
-						message
-					});
-
-					break;
-
-				case -1304:
-					console.error('音频编码失败: ', code);
-
-					this._emitter.emit(EVENT.ERROR, {
-						code,
-						message
-					});
-
-					break;
-
-				case -1307:
-					console.error('推流连接断开: ', code);
-
-					this._emitter.emit(EVENT.ERROR, {
-						code,
-						message
-					});
-
-					break;
-
-				case -100018:
-					console.error('进房失败: ', code, message);
-
-					this._emitter.emit(EVENT.ERROR, {
-						code,
-						message
-					});
-
-					break;
-
-				case 5000:
-					console.log('小程序被挂起: ', code); // 终端 sdk 建议执行退房操作，唤起时重新进房，临时解决方案，待小程序SDK完全实现自动重新推流后可以去掉
-
-					this.status.isPending = true;
-
-					if (this.status.isPush) {
-						// this.exitRoom()
-						const tempUrl = this.pusher.url;
-						this.pusher.url = ''; // console.log('5000 小程序被挂起后更换pusher', this.data.pusher.getPusherContext().webviewId)
-
-						this.setData(
-							{
-								pusher: this.pusher
-							},
-							() => {
-								this.pusher.url = tempUrl;
-								this.setData(
-									{
-										pusher: this.pusher
-									},
-									() => {
-										this.pusher.getPusherContext().start();
-										console.log('5000 小程序被挂起后更换pusher', this.pusher);
-									}
-								);
-							}
-						);
-					}
-
-					break;
-
-				case 1021:
-					console.log('网络类型发生变化，需要重新进房', code);
-					break;
-
-				case 2007:
-					console.log('本地视频播放loading: ', code);
-					break;
-
-				case 2004:
-					console.log('本地视频播放开始: ', code);
-					break;
-
-				default:
-					console.log(message, code);
-			}
-
-			this._emitter.emit(EVENT.LOCAL_STATE_UPDATE, {
-				data: event
-			});
-		},
-		pusherNetStatusHandlerFun: function(event) {
-			// 触发 LOCAL_NET_STATE_UPDATE
-			this._emitter.emit(EVENT.LOCAL_NET_STATE_UPDATE, event);
-		},
-		pusherErrorHandlerFun: function(event) {
-			// 触发 ERROR
-			console.warn(TAG_NAME, 'pusher error', event);
-
-			try {
-				const code = event.detail.errCode;
-				const message = event.detail.errMsg;
-
-				this._emitter.emit(EVENT.ERROR, {
-					code,
-					message
+			toggleMoreMenuFun() {
+				this.setData({
+					isShowMoreMenu: !this.isShowMoreMenu
 				});
-			} catch (exception) {
-				console.error(TAG_NAME, 'pusher error data parser exception', event, exception);
-			}
-		},
-		pusherBGMStartHandlerFun: function(event) {
-			// 触发 BGM_START 已经在playBGM方法中进行处理
-			// this._emitter.emit(EVENT.BGM_PLAY_START, { data: event })
-		},
-		pusherBGMProgressHandlerFun: function(event) {
-			// BGM_PROGRESS
-			this._emitter.emit(EVENT.BGM_PLAY_PROGRESS, event);
-		},
-		pusherBGMCompleteHandlerFun: function(event) {
-			// BGM_COMPLETE
-			this._emitter.emit(EVENT.BGM_PLAY_COMPLETE, event);
-		},
-		// player event handler
-		// 获取 player ID 再进行触发
-		playerStateChangeFun: function(event) {
-			// console.log(TAG_NAME, 'playerStateChangeFun', event)
-			this._emitter.emit(EVENT.REMOTE_STATE_UPDATE, event);
-		},
-		playerFullscreenChangeFun: function(event) {
-			// console.log(TAG_NAME, '_playerFullscreenChange', event)
-			this._emitter.emit(EVENT.REMOTE_NET_STATE_UPDATE, event);
-		},
-		playerNetStatusFun: function(event) {
-			// console.log(TAG_NAME, 'playerNetStatusFun', event)
-			// 获取player 视频的宽高
-			const stream = this.userController.getStream({
-				userID: event.currentTarget.dataset.userid,
-				streamType: event.currentTarget.dataset.streamtype
-			});
+			},
 
-			if (stream && (stream.videoWidth !== event.detail.info.videoWidth || stream.videoHeight !== event.detail.info.videoHeight)) {
-				console.log(TAG_NAME, 'playerNetStatusFun update video size', event);
-				stream.videoWidth = event.detail.info.videoWidth;
-				stream.videoHeight = event.detail.info.videoHeight;
-			}
-
-			this._emitter.emit(EVENT.REMOTE_FULLSCREEN_UPDATE, event);
-		},
-		playerAudioVolumeNotifyFun: function(event) {
-			// console.log(TAG_NAME, 'playerAudioVolumeNotifyFun', event)
-			this._emitter.emit(EVENT.REMOTE_AUDIO_VOLUME_UPDATE, event);
-		},
-
-		/**
-		 * 监听组件属性变更，外部变更组件属性时触发该监听，用于检查属性设置是否正常
-		 * @param {Object} data 变更数据
-		 */
-		propertyObserverFun: function(data) {
-			console.log(TAG_NAME, '_propertyObserver', data, this.config);
-
-			if (data.name === 'config') {
-				// const config = Object.assign(DEFAULT_PUSHER_CONFIG, data.newVal)
-				const config = data.newVal; // querystring 只支持String类型，做一个类型防御
-
-				if (typeof config.debugMode === 'string') {
-					config.debugMode === 'true' ? true : false;
-				} // 独立设置与pusher无关的配置
+			toggleIMPanelFun() {
+				if (!this.enableIM) {
+					uni.showToast({
+						icon: 'none',
+						title: '当前没有开启IM功能，请设置 enableIM:true'
+					});
+				}
 
 				this.setData({
-					template: config.template,
-					debugMode: config.debugMode || false,
-					debug: config.debugMode || false
+					showIMPanel: !this.showIMPanel
 				});
-				this.setPusherConfigFun(config);
-			}
-		},
+			},
 
-		toggleVideoFun() {
-			if (this.pusher.enableCamera) {
-				this.unpublishLocalVideo();
-			} else {
-				this.publishLocalVideo();
-			}
-		},
+			handleBGMOperationFun(event) {
+				const operationName = event.currentTarget.dataset.operationName;
 
-		toggleAudioFun() {
-			if (this.pusher.enableMic) {
-				this.unpublishLocalAudio();
-			} else {
-				this.publishLocalAudio();
-			}
-		},
-
-		debugToggleRemoteVideoFun(event) {
-			console.log(TAG_NAME, '_debugToggleRemoteVideo', event.currentTarget.dataset);
-			const userID = event.currentTarget.dataset.userID;
-			const streamType = event.currentTarget.dataset.streamType;
-			const stream = this.streamList.find(item => {
-				return item.userID === userID && item.streamType === streamType;
-			});
-
-			if (stream.muteVideo) {
-				this.subscribeRemoteVideo({
-					userID,
-					streamType
-				});
-				this.setViewVisible({
-					userID,
-					streamType,
-					isVisible: true
-				});
-			} else {
-				this.unsubscribeRemoteVideo({
-					userID,
-					streamType
-				});
-				this.setViewVisible({
-					userID,
-					streamType,
-					isVisible: false
-				});
-			}
-		},
-
-		debugToggleRemoteAudioFun(event) {
-			console.log(TAG_NAME, '_debugToggleRemoteAudio', event.currentTarget.dataset);
-			const userID = event.currentTarget.dataset.userID;
-			const streamType = event.currentTarget.dataset.streamType;
-			const stream = this.streamList.find(item => {
-				return item.userID === userID && item.streamType === streamType;
-			});
-
-			if (stream.muteAudio) {
-				this.subscribeRemoteAudio({
-					userID
-				});
-			} else {
-				this.unsubscribeRemoteAudio({
-					userID
-				});
-			}
-		},
-
-		debugToggleVideoDebugFun() {
-			this.setData({
-				debug: !this.debug
-			});
-		},
-
-		debugExitRoomFun() {
-			this.exitRoom();
-		},
-
-		debugEnterRoomFun() {
-			this.publishLocalVideo();
-			this.publishLocalAudio();
-			this.enterRoom({
-				roomID: this.config.roomID
-			}).then(() => {
-				// 进房后开始推送视频或音频
-			});
-		},
-
-		debugGoBackFun() {
-			wx.navigateBack({
-				delta: 1
-			});
-		},
-
-		debugTogglePanelFun() {
-			this.setData({
-				debugPanel: !this.debugPanel
-			});
-		},
-
-		toggleAudioVolumeTypeFun() {
-			if (this.pusher.audioVolumeType === 'voicecall') {
-				this.setPusherConfigFun({
-					audioVolumeType: 'media'
-				});
-			} else {
-				this.setPusherConfigFun({
-					audioVolumeType: 'voicecall'
-				});
-			}
-		},
-
-		toggleSoundModeFun() {
-			if (this.userList.length === 0) {
-				return;
-			}
-
-			const stream = this.userController.getStream({
-				userID: this.userList[0].userID,
-				streamType: 'main'
-			});
-
-			if (stream) {
-				if (stream.soundMode === 'speaker') {
-					stream['soundMode'] = 'ear';
-				} else {
-					stream['soundMode'] = 'speaker';
-				}
-
-				this.setPlayerConfigFun({
-					userID: stream.userID,
-					streamType: 'main',
-					config: {
-						soundMode: stream['soundMode']
-					}
-				});
-			}
-		},
-
-		/**
-		 * 退出通话
-		 */
-		hangUpFun: function() {
-			this.exitRoom();
-			wx.navigateBack({
-				delta: 1
-			});
-		},
-
-		/**
-		 * 切换订阅音频状态
-		 */
-		handleSubscribeAudio: function() {
-			if (this.pusher.enableMic) {
-				this.unpublishLocalAudio();
-			} else {
-				this.publishLocalAudio();
-			}
-		},
-
-		/**
-		 * 切换订阅远端视频状态
-		 * @param event
-		 */
-		handleSubscribeRemoteVideoFun: function(event) {
-			const userID = event.currentTarget.dataset.userID;
-			const streamType = event.currentTarget.dataset.streamType;
-			const stream = this.streamList.find(item => {
-				return item.userID === userID && item.streamType === streamType;
-			});
-
-			if (stream.muteVideo) {
-				this.subscribeRemoteVideo({
-					userID,
-					streamType
-				});
-			} else {
-				this.unsubscribeRemoteVideo({
-					userID,
-					streamType
-				});
-			}
-		},
-
-		/**
-		 * 将远端视频取消全屏
-		 * @param event
-		 */
-		handleSubscribeRemoteAudioFun: function(event) {
-			const userID = event.currentTarget.dataset.userID;
-			const streamType = event.currentTarget.dataset.streamType;
-			const stream = this.streamList.find(item => {
-				return item.userID === userID && item.streamType === streamType;
-			});
-
-			if (stream.muteAudio) {
-				this.subscribeRemoteAudio({
-					userID
-				});
-			} else {
-				this.unsubscribeRemoteAudio({
-					userID
-				});
-			}
-		},
-
-		/**
-		 * grid布局, 唤起 memberlist-panel
-		 */
-		switchMemberListPanelFun() {
-			this.setData({
-				panelName: this.panelName !== 'memberlist-panel' ? 'memberlist-panel' : ''
-			});
-		},
-
-		/**
-		 * grid布局, 唤起setting-panel
-		 */
-		switchSettingPanelFun() {
-			this.setData({
-				panelName: this.panelName !== 'setting-panel' ? 'setting-panel' : ''
-			});
-		},
-
-		handleMaskerClickFun() {
-			this.setData({
-				panelName: ''
-			});
-		},
-
-		setPuserPropertyFun(event) {
-			// console.log(TAG_NAME, '_setPuserProperty', event)
-			const key = event.currentTarget.dataset.key;
-			let value = event.currentTarget.dataset.value;
-			const config = {};
-
-			if (value === 'true') {
-				value = true;
-			} else if (value === 'false') {
-				value = false;
-			}
-
-			if (typeof value === 'boolean') {
-				config[key] = !this.pusher[key];
-			} else if (typeof value === 'string' && value.indexOf('|') > 0) {
-				value = value.split('|');
-
-				if (this.pusher[key] === value[0]) {
-					config[key] = value[1];
-				} else {
-					config[key] = value[0];
-				}
-			} // console.log(TAG_NAME, '_setPuserProperty', config)
-
-			this.setPusherConfigFun(config);
-		},
-
-		setPlayerPropertyFun(event) {
-			console.log(TAG_NAME, '_setPlayerProperty', event);
-			const userID = event.currentTarget.dataset.userid;
-			const streamType = event.currentTarget.dataset.streamtype;
-			const key = event.currentTarget.dataset.key;
-			let value = event.currentTarget.dataset.value;
-			const stream = this.userController.getStream({
-				userID: userID,
-				streamType: streamType
-			});
-
-			if (!stream) {
-				return;
-			}
-
-			const config = {};
-
-			if (value === 'true') {
-				value = true;
-			} else if (value === 'false') {
-				value = false;
-			}
-
-			if (typeof value === 'boolean') {
-				config[key] = !stream[key];
-			} else if (typeof value === 'string' && value.indexOf('|') > 0) {
-				value = value.split('|');
-
-				if (stream[key] === value[0]) {
-					config[key] = value[1];
-				} else {
-					config[key] = value[0];
-				}
-			}
-
-			console.log(TAG_NAME, '_setPlayerProperty', config);
-			this.setPlayerConfigFun({
-				userID,
-				streamType,
-				config
-			});
-		},
-
-		switchStreamTypeFun(event) {
-			const userID = event.currentTarget.dataset.userid;
-			const streamType = event.currentTarget.dataset.streamtype;
-			const stream = this.userController.getStream({
-				userID: userID,
-				streamType: streamType
-			});
-
-			if (stream && stream.streamType === 'main') {
-				if (stream._definitionType === 'small') {
-					this.subscribeRemoteVideo({
-						userID,
-						streamType: 'main'
-					});
-				} else {
-					this.subscribeRemoteVideo({
-						userID,
-						streamType: 'small'
+				if (this[operationName]) {
+					this[operationName]({
+						url: 'https://trtc-1252463788.cos.ap-guangzhou.myqcloud.com/web/assets/bgm-test.mp3'
 					});
 				}
-			}
-		},
+			},
 
-		handleSnapshotClickFun(event) {
-			wx.showToast({
-				title: '开始截屏',
-				icon: 'none',
-				duration: 1000
-			});
-			const userID = event.currentTarget.dataset.userid;
-			const streamType = event.currentTarget.dataset.streamtype;
-			this.snapshot({
-				userID,
-				streamType
-			});
-		},
+			selectBeautyStyleFun: function(event) {
+				console.log(TAG_NAME, '_selectBeautyStyle',
+				event); // this.data.beauty = (event.detail.value === 'close' ? 0 : 9)
 
-		/**
-		 * grid布局, 绑定事件
-		 */
-		bindEventGridFun() {
-			// 远端音量变更
-			this.on(EVENT.REMOTE_AUDIO_VOLUME_UPDATE, event => {
-				const data = event.data;
-				const userID = data.currentTarget.dataset.userid;
-				const streamType = data.currentTarget.dataset.streamtype;
-				const volume = data.detail.volume; // console.log(TAG_NAME, '远端音量变更', userID, streamType, volume)
-
-				const stream = this.userController.getStream({
-					userID: userID,
-					streamType: streamType
+				const value = event.detail.value;
+				this.setData({
+					// beauty: (value === 'close' ? 0 : 9),
+					beautyStyle: value
+				}, () => {
+					this.setPusherConfigFun({
+						beautyLevel: value === 'close' ? 0 : 9,
+						beautyStyle: value === 'close' ? 'smooth' : value
+					});
 				});
+			},
+			selectFilterFun: function(event) {
+				console.log(TAG_NAME, '_selectFilter', event);
+				const index = parseInt(event.detail.value);
+				this.setData({
+					filterIndex: index
+				}, () => {
+					this.setPusherConfigFun({
+						filter: this.filterArray[index].value
+					});
+				});
+			},
+			selectAudioReverbTypeFun: function(event) {
+				console.log(TAG_NAME, '_selectAudioReverbType', event);
+				const audioReverbType = parseInt(event.detail.value);
+				this.setPusherConfigFun({
+					audioReverbType
+				});
+			},
 
-				if (stream) {
-					stream.volume = volume;
+			sendIMMessageFun(event) {
+				console.log(TAG_NAME, '_sendIMMessage', event);
+
+				if (!this.messageContent) {
+					return;
 				}
 
-				this.setData(
-					{
-						streamList: this.streamList
-					},
-					() => {}
-				);
-			});
-		},
+				const roomID = this.config.roomID;
+				const message = this.messageContent;
+				const userID = this.config.userID;
+				this.sendGroupTextMessage({
+					roomID,
+					message
+				}); // 消息上屏
 
-		toggleFullscreenFun(event) {
-			console.log(TAG_NAME, '_toggleFullscreen', event);
-			const userID = event.currentTarget.dataset.userID;
-			const streamType = event.currentTarget.dataset.streamType;
+				this.pushMessageListFun({
+					name: userID,
+					message: message
+				});
+				this.setData({
+					messageContent: ''
+				});
+			},
 
-			if (this._isFullscreen) {
-				this.exitFullscreen({
-					userID,
-					streamType
-				})
-					.then(() => {
-						this._isFullscreen = false;
-					})
-					.catch(() => {});
-			} else {
-				// const stream = this.userController.getStream({ userID, streamType })
-				const direction = 0; // 已知问题：视频的尺寸需要等待player触发NetStatus事件才能获取到，如果进房就双击全屏，全屏后的方向有可能不对。
-				// if (stream && stream.videoWidth && stream.videoHeight) {
-				//   // 如果是横视频，全屏时进行横屏处理。如果是竖视频，则为0
-				//   direction = stream.videoWidth > stream.videoHeight ? 90 : 0
-				// }
+			inputIMMessageFun(event) {
+				// console.log(TAG_NAME, '_inputIMMessage', event)
+				this.setData({
+					messageContent: event.detail.value
+				});
+			},
 
-				this.enterFullscreen({
-					userID,
-					streamType,
-					direction
-				})
-					.then(() => {
-						this._isFullscreen = true;
-					})
-					.catch(() => {});
+			pushMessageListFun(params) {
+				if (this.messageList.length === this.maxMessageListLength) {
+					this.messageList.shift();
+				}
+
+				this.messageList.push(params);
+				this.setData({
+					messageList: this.messageList,
+					messageListScrollTop: this.messageList.length * 100
+				}, () => {});
 			}
+
 		}
-	}
-};
+	};
 </script>
 <style>
-@import './trtc-room.css';
+	@import "./template/1v1/1v1.css";
+	@import "./template/grid/grid.css";
+	@import "./template/custom/custom.css";
+
+	.pusher {
+		width: 100%;
+		height: 100%;
+	}
+
+	.player {
+		width: 100%;
+		height: 100%;
+	}
+
+	.debug-info {
+		max-width: 100vw;
+		max-height: 90vh;
+		box-sizing: border-box;
+		overflow-y: scroll;
+		position: absolute;
+		z-index: 9999;
+		background-color: rgba(0, 0, 0, .5);
+		color: #fff;
+		bottom: 20rpx;
+		left: 0;
+		padding: 10rpx;
+		font-size: 12px;
+	}
+
+	.debug-info-btn .debug-btn,
+	.debug-info .debug-btn {
+		padding: 0 8px;
+		min-height: 18px;
+		width: auto;
+		font-size: 12px;
+		line-height: 18px;
+		display: inline-block;
+		color: #06ae56;
+		background-color: #f2f2f2;
+	}
+
+	.debug-info .debug-btn.false {
+		color: rgb(114, 114, 114);
+	}
+
+	.debug-info-btn .debug-btn,
+	.debug-info .button-hover {
+		background-color: rgb(219, 219, 219);
+	}
+
+	.debug-info .close-btn {
+		position: absolute;
+		top: 0;
+		right: 0;
+		padding: 5px 10px;
+	}
+
+	.debug-info .text.true {
+		color: #1fff8b;
+	}
+
+	.debug-info .text.false {
+		color: #ff2e2e;
+	}
+
+	.debug-info-btn {
+		position: absolute;
+		z-index: 9998;
+		bottom: 160rpx;
+		left: 0;
+	}
+
+	.trtc-room-container .btn {
+		display: inline-block;
+		width: auto;
+		height: 60rpx;
+		min-height: 60rpx;
+		line-height: 60rpx;
+		font-size: 12px;
+		font-weight: normal;
+		padding: 0 10rpx;
+		color: #006eff;
+		background-color: #f2f2f2;
+		margin: 0 16rpx;
+	}
+
+	.trtc-room-container .btn.active {
+		color: #f2f2f2;
+		background-color: #006eff;
+	}
+
+	.trtc-room-container .btn-hover {
+		background-color: #d1d1d1;
+	}
+
+	.im-panel {
+		position: absolute;
+		z-index: 9;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		width: 90vw;
+		height: 320rpx;
+		top: 50vh;
+		left: 50vw;
+		transform: translate(-50%, -50%);
+		padding: 20rpx 0;
+		border-radius: 10rpx;
+		font-size: 12px;
+		/* bottom: 25vh; */
+		color: #fff;
+		background-color: rgba(0, 0, 0, 0.8);
+	}
+
+	.im-panel .close-btn {
+		position: absolute;
+		top: 0;
+		right: -3px;
+		padding: 5px 10px;
+		z-index: 99;
+	}
+
+	.message-panel-body {
+		width: 100%;
+		height: 80%;
+		overflow-x: hidden;
+		overflow-y: scroll;
+	}
+
+	.message-scroll-container {
+		height: 100%;
+		/* box-sizing: border-box;
+  padding: 0 20rpx; */
+	}
+
+	.message-list {
+		width: 100%;
+		box-sizing: border-box;
+		padding: 0 20rpx;
+		/* display: flex;
+  flex-direction: column; */
+	}
+
+	.message-item {
+		width: 100%;
+		/* height: 36rpx; */
+		/* padding: 0 20rpx; */
+		padding-bottom: 10rpx;
+		display: flex;
+		flex-direction: row;
+	}
+
+	.message-item .user-name {
+		width: 20%;
+		color: #2483ff;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.user-name.mine {
+		color: #ff7424;
+	}
+
+	.message-item .separate {
+		padding: 0 5px;
+		color: #fff;
+	}
+
+	.message-item .message-content {
+		word-wrap: break-word;
+		word-break: break-all;
+		padding-left: 20rpx;
+		position: relative;
+		max-width: 80%;
+		box-sizing: border-box;
+	}
+
+	.message-content::after {
+		content: ':';
+		position: absolute;
+		left: 0;
+		top: 0;
+	}
+
+	.message-panel-bottom {
+		width: 100%;
+		height: 50rpx;
+		box-sizing: border-box;
+		padding: 0 20rpx 0;
+		margin-top: 20rpx;
+		display: flex;
+		flex-direction: row;
+	}
+
+	.message-input-container {
+		flex-grow: 1;
+	}
+
+	.message-input-container .message-input {
+		font-size: 12px;
+		padding-left: 20rpx;
+		border-radius: 10rpx;
+		height: 100%;
+		background-color: rgba(0, 0, 0, 0.1);
+	}
+
+	.message-send-btn .btn {
+		margin-right: 0;
+		height: 50rpx;
+		min-height: 50rpx;
+		line-height: 50rpx;
+	}
+
+	.volume-animation {
+		position: absolute;
+		width: 80rpx;
+		height: 80rpx;
+		left: 0;
+		top: initial;
+		bottom: 20rpx;
+		z-index: 9;
+		/* transform: translate(-50%, 0); */
+	}
+
+	.volume-animation .image {
+		position: absolute;
+		width: 80rpx;
+		height: 80rpx;
+	}
+
+	.volume-animation .audio-active {
+		animation: viewlinear 1.5s linear infinite;
+	}
+
+	@keyframes viewlinear {
+
+		/** 第一种写法**/
+		0% {
+			height: 0;
+		}
+
+		100% {
+			height: 100%;
+		}
+	}
+
+	.none,
+	.view-container.none,
+	.template-grid .view-container.none,
+	.template-1v1 .view-container.none {
+		display: none !important;
+	}
 </style>

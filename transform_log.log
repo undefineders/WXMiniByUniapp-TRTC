@@ -1,0 +1,154 @@
+
+Warning： 找不到package.json文件(不影响转换，无视这条)
+
+miniprogram to uni-app 转换日志
+
+---基本信息---
+时间: 2021-04-06 14:34:11
+语言: Javascript
+转换模式: Hbuilder X
+是否转换wxs文件: false
+
+---小程序基本信息---
+name: MiniProgram-TRTC
+version: 
+description: 
+appid: 在这填写您的微信小程序AppID
+projectname: 
+compileType: miniprogram
+author: 
+
+---目录信息---
+sourceFolder: D:/Documents/HBuilderProjects/WXMini/TRTCSimpleDemo
+targetFolder: D:/Documents/HBuilderProjects/WXMini/TRTCSimpleDemo_uni
+outputFolder: D:/Documents/HBuilderProjects/WXMini/TRTCSimpleDemo_uni
+miniprogramRoot: D:/Documents/HBuilderProjects/WXMini/TRTCSimpleDemo
+
+---日志信息---
+Convert App.vue success!
+Convert component debug\GenerateTestUserSig.js success!
+Convert component debug\lib-generate-test-usersig-es.min.js success!
+Convert components\trtc-room\trtc-room.vue success!
+Convert pages\index\index.vue success!
+Convert pages\meeting\meeting.vue success!
+Convert pages\room\room.vue success!
+Convert pages\videocall\videocall.vue success!
+Convert component components\trtc-room\common\constants.js success!
+Convert component components\trtc-room\controller\user-controller.js success!
+Convert component components\trtc-room\libs\mta_analysis.js success!
+Convert component components\trtc-room\libs\tim-wx.js success!
+Convert component components\trtc-room\model\pusher.js success!
+Convert component components\trtc-room\model\stream.js success!
+Convert component components\trtc-room\model\user.js success!
+Convert component components\trtc-room\utils\compare-version.js success!
+Convert component components\trtc-room\utils\environment.js success!
+Convert component components\trtc-room\utils\event.js success!
+Convert pages\voice-room\join-room\joinRoom.vue success!
+Convert pages\voice-room\room\room.vue success!
+Convert components\trtc-room\template\1v1\1v1.vue success!
+Convert components\trtc-room\template\custom\custom.vue success!
+Convert components\trtc-room\template\grid\grid.vue success!
+[命名替换]:  propertyObserverFun  -->  propertyObserverFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _initStatus  -->  initStatusFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _bindEvent  -->  bindEventFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _gridBindEvent  -->  gridBindEventFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _keepScreenOn  -->  keepScreenOnFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _initIM  -->  initIMFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setPusherConfig  -->  setPusherConfigFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _checkParam  -->  checkParamFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _getPushUrl  -->  getPushUrlFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _loginIM  -->  loginIMFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _exitIM  -->  exitIMFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _filterVisibleStream  -->  filterVisibleStreamFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setPusherConfig  -->  setPusherConfigFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setPusherConfig  -->  setPusherConfigFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setPusherConfig  -->  setPusherConfigFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setPusherConfig  -->  setPusherConfigFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setPlayerConfig  -->  setPlayerConfigFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setPlayerConfig  -->  setPlayerConfigFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setPlayerConfig  -->  setPlayerConfigFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setPlayerConfig  -->  setPlayerConfigFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setPusherConfig  -->  setPusherConfigFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setPlayerConfig  -->  setPlayerConfigFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setPusherConfig  -->  setPusherConfigFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setPlayerConfig  -->  setPlayerConfigFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setPusherConfig  -->  setPusherConfigFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setPlayerConfig  -->  setPlayerConfigFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setPlayerConfig  -->  setPlayerConfigFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setPlayerConfig  -->  setPlayerConfigFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setPlayerConfig  -->  setPlayerConfigFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setPlayerConfig  -->  setPlayerConfigFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _filterVisibleStream  -->  filterVisibleStreamFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _filterVisibleStream  -->  filterVisibleStreamFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setList  -->  setListFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setList  -->  setListFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setList  -->  setListFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setList  -->  setListFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setList  -->  setListFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _filterGridPageVisibleStream  -->  filterGridPageVisibleStreamFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _gridPageToPrev  -->  gridPageToPrevFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _onIMReady  -->  onIMReadyFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _onIMMessageReceived  -->  onIMMessageReceivedFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _onIMNotReady  -->  onIMNotReadyFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _onIMKickedOut  -->  onIMKickedOutFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _onIMError  -->  onIMErrorFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _onIMReady  -->  onIMReadyFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _onIMMessageReceived  -->  onIMMessageReceivedFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _onIMNotReady  -->  onIMNotReadyFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _onIMKickedOut  -->  onIMKickedOutFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _onIMError  -->  onIMErrorFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _searchGroup  -->  searchGroupFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _dismissGroup  -->  dismissGroupFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _logoutIM  -->  logoutIMFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _logoutIM  -->  logoutIMFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _logoutIM  -->  logoutIMFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _quitGroup  -->  quitGroupFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _logoutIM  -->  logoutIMFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _logoutIM  -->  logoutIMFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _logoutIM  -->  logoutIMFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _searchGroup  -->  searchGroupFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _joinGroup  -->  joinGroupFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _createGroup  -->  createGroupFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _joinGroup  -->  joinGroupFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _joinGroup  -->  joinGroupFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _pushMessageList  -->  pushMessageListFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _pushMessageList  -->  pushMessageListFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _pushMessageList  -->  pushMessageListFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setPusherConfig  -->  setPusherConfigFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setPusherConfig  -->  setPusherConfigFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setPlayerConfig  -->  setPlayerConfigFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setPusherConfig  -->  setPusherConfigFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setPlayerConfig  -->  setPlayerConfigFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _filterVisibleStream  -->  filterVisibleStreamFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setPusherConfig  -->  setPusherConfigFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _gridPagePrev  -->  gridPagePrevFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _gridPageNext  -->  gridPageNextFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _filterGridPageVisibleStream  -->  filterGridPageVisibleStreamFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _gridPageToPrev  -->  gridPageToPrevFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _gridPageSetData  -->  gridPageSetDataFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _gridPageSetData  -->  gridPageSetDataFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _gridShowPageTips  -->  gridShowPageTipsFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _filterVisibleStream  -->  filterVisibleStreamFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setPusherConfig  -->  setPusherConfigFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setPusherConfig  -->  setPusherConfigFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setPusherConfig  -->  setPusherConfigFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _pushMessageList  -->  pushMessageListFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _init  -->  initFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setList  -->  setListFun    file: components\trtc-room\trtc-room.js
+[命名替换]:  _setList  -->  setListFun    file: components\trtc-room\trtc-room.js
+
+转换完成: 
+耗时：54963ms
+当前转换模式：【Hbuilder X】，生成HbuilderX项目。
+优点：上手快，项目结构较简单；
+缺点：资源路径会因为表达式而无法全部被修复(“可能”需手动修复)
+
+注意：
+1.当看到"image漏网之鱼"，意味着您"可能"，“可能”，记住是“可能”，但不一定需要手动调整对应代码(以实际编译运行为准)，当image标签的src属性是含变量或表达式，工具还无法做到100%转换，需要手动修改为相对/static目录的路径
+
+
+日志说明：
+1. image漏网之鱼 --> 为HbuilderX模式时，需要将资源移动到static，并且修复相应文件路径，有可能src为网络文件，有可能为变量或表达式，可能会导致转换后文件找不到，因此提示一下
+修复提示：编译时，如有报错就将对应位置修复即可(虽然目前uni-app有类似的支持，似乎并不完善)
+
+2. 命名替换 --> 小程序里对于属性名基本没什么限制，如id能做属性名，data下面的变量和函数名还能重名，但这些在uni-app里是不支持的，因此做了相关替换，并记录日志，也许组件在外部调用时，函数名被改而因此报错时，请查看答疑文档
