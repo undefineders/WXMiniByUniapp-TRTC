@@ -2,7 +2,7 @@
     "name" : "MiniProgram-TRTC-uni",
     "appid" : "__UNI__9096A31",
     "description" : "微信小程序版本的 TRTC DEMO",
-    "versionName" : "1.0.1",
+    "versionName" : "1.0.2",
     "versionCode" : "",
     "transformPx" : false,
     "app-plus" : {
@@ -49,7 +49,7 @@
     },
     "quickapp" : {},
     "mp-weixin" : {
-        "appid" : "",
+        "appid" : "wxd2cfffe4ead29e56",
         "setting" : {
             "urlCheck" : false,
             "minified" : true
