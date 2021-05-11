@@ -100,8 +100,8 @@
 								<view class="grid-scroll-container" @touchstart="handleGridTouchStartFun"
 									@touchend="handleGridTouchEndFun">
 									<!-- <view id="grid-container-id" class="grid-container {{visibleStreamList.length < 4 ? 'stream-' + visibleStreamList.length : visibleStreamList.length%2 == 0? 'stream-odd':'stream-even'}}"> -->
-									<view id="grid-container-id"
-										:class="'grid-container ' + (visibleStreamList.length < 4 ? 'stream-' + visibleStreamList.length : 'stream-3')">
+									<view id="grid-container-id" :class="sbstyle" >
+										<!-- :class="'grid-container ' + (visibleStreamList.length < 4 ? 'stream-' + visibleStreamList.length : 'stream-3')"> -->
 
 										<view
 											:class="'view-container pusher-container ' + (pusher.isVisible && ((gridCurrentPage === 1 && gridPlayerPerPage > 3) || gridPlayerPerPage < 4)?'':'none')">
@@ -132,7 +132,7 @@
 												@audiovolumenotify="pusherAudioVolumeNotifyFun"></live-pusher>
 											<view class="no-video" v-if="!pusher.enableCamera">
 												<image class="image"
-													src="../../static/components/trtc-room/static/static/mute-camera-white.png">
+													src="../../static/components/trtc-room/static/mute-camera-white.png">
 												</image>
 											</view>
 											<!-- <view class="no-audio" wx:if="{{!pusher.enableMic}}">
@@ -166,7 +166,7 @@
 												@audiovolumenotify="playerAudioVolumeNotifyFun"></live-player>
 											<view class="no-video" v-if="item.muteVideo">
 												<image class="image"
-													src="../../static/components/trtc-room/static/static/display-pause-white.png">
+													src="../../static/components/trtc-room/static/display-pause-white.png">
 												</image>
 												<view class="text">
 													<p>{{item.userID}}</p>
@@ -174,7 +174,7 @@
 											</view>
 											<view class="no-video" v-if="!item.hasVideo && !item.muteVideo">
 												<image class="image"
-													src="../../static/components/trtc-room/static/static/mute-camera-white.png">
+													src="../../static/components/trtc-room/static/mute-camera-white.png">
 												</image>
 												<view class="text">
 													<p>{{item.userID}}</p>
@@ -185,16 +185,16 @@
 											</view>
 											<view class="no-audio" v-if="!item.hasAudio">
 												<image class="image"
-													src="../../static/components/trtc-room/static/static/mute-mic-white.png">
+													src="../../static/components/trtc-room/static/mute-mic-white.png">
 												</image>
 											</view>
 											<view class="audio-volume" v-if="item.hasAudio">
 												<image class="image"
-													src="../../static/components/trtc-room/static/static/micro-open.png">
+													src="../../static/components/trtc-room/static/micro-open.png">
 												</image>
 												<view class="audio-active" :style="'height:' + item.volume + '%'">
 													<image class="image"
-														src="../../static/components/trtc-room/static/static/audio-active.png">
+														src="../../static/components/trtc-room/static/audio-active.png">
 													</image>
 												</view>
 											</view>
@@ -218,7 +218,7 @@
 														:data-user-i-d="item.userID"
 														:data-stream-type="item.streamType">
 														<image class="item-image"
-															src="../../static/components/trtc-room/static/static/fullscreen-white.png">
+															src="../../static/components/trtc-room/static/fullscreen-white.png">
 														</image>
 													</view>
 												</view>
@@ -228,7 +228,7 @@
 										<view v-for="(item, index) in gridPagePlaceholderStreamList" :key="index"
 											class="view-container player-container player-placeholder">
 											<image class="image"
-												src="../../static/components/trtc-room/static/static/mute-camera-white.png">
+												src="../../static/components/trtc-room/static/mute-camera-white.png">
 											</image>
 										</view>
 									</view>
@@ -238,17 +238,17 @@
 								<view class="menu" v-if="!isShowMoreMenu">
 									<view class="menu-item" @tap="switchSettingPanelFun">
 										<image class="image"
-											src="../../static/components/trtc-room/static/static/setting-white.png">
+											src="../../static/components/trtc-room/static/setting-white.png">
 										</image>
 									</view>
 									<view class="menu-item" @tap="switchMemberListPanelFun">
 										<image class="image"
-											src="../../static/components/trtc-room/static/static/list-white.png">
+											src="../../static/components/trtc-room/static/list-white.png">
 										</image>
 									</view>
 									<view class="menu-item" @tap="hangUpFun">
 										<image class="image"
-											src="../../static/components/trtc-room/static/static/hangup-red.png">
+											src="../../static/components/trtc-room/static/hangup-red.png">
 										</image>
 									</view>
 									<view class="menu-item" @tap="toggleIMPanelFun">
@@ -318,7 +318,7 @@
 										<view class="label">切换摄像头</view>
 										<view class="btn-normal" @tap="switchCamera">
 											<image class="btn-image"
-												src="../../static/components/trtc-room/static/static/switch.png">
+												src="../../static/components/trtc-room/static/switch.png">
 											</image>
 										</view>
 									</view>
@@ -639,7 +639,12 @@
 				debugMode: ""
 			};
 		},
-
+        computed: {
+            sbstyle() {
+                let { visibleStreamList } = this
+                return 'grid-container ' + (visibleStreamList.length < 4 ? 'stream-' + visibleStreamList.length : 'stream-3')
+            }
+        },
 		components: {},
 		props: {
 			// 必要的初始化参数

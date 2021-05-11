@@ -53,8 +53,8 @@ Vue.mixin({
 					that.$set(front, after, val);
 				}
 			});
-			// this.$forceUpdate();
-			isFn(callback) && this.$nextTick(callback);
+			that.$forceUpdate();
+			isFn(callback) && that.$nextTick(callback);
 		}
 	}
 });
