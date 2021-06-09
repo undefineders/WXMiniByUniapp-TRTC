@@ -25,7 +25,7 @@
 							</live-player>
 						</view>
 						<view
-							:class="'view-container pusher-container ' + (pusher.isVisible?'':'none') + ' ' + (streamList.length===0? 'fullscreen':'')">
+							:class="'view-container pusher-container ' + (pusher.isVisible?'':'none') + ' ' + v1Style + ' ' + (streamList.length===0? 'fullscreen':'')">
 							<live-pusher class="pusher" :url="pusher.url" :mode="pusher.mode"
 								:autopush="pusher.autopush" :enable-camera="pusher.enableCamera"
 								:enable-mic="pusher.enableMic" :muted="!pusher.enableMic" :enable-agc="pusher.enableAgc"
@@ -643,7 +643,12 @@
             sbstyle() {
                 let { visibleStreamList } = this
                 return 'grid-container ' + (visibleStreamList.length < 4 ? 'stream-' + visibleStreamList.length : 'stream-3')
+            },
+	    v1Style() {
+                let { pusher, streamList } = this
+                return 'view-container pusher-container ' + (pusher.isVisible?'':'none') + ' ' + (streamList.length===0? 'fullscreen':'')
             }
+
         },
 		components: {},
 		props: {
